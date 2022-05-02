@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.supermassivecode.vinylfinder.BuildConfig
 import com.supermassivecode.vinylfinder.R
 import com.supermassivecode.vinylfinder.data.remote.DiscogsService
 import kotlinx.coroutines.CoroutineScope
@@ -27,8 +28,10 @@ class SearchScreenViewModel: ViewModel() {
     }
 
     private suspend fun searchDiscogs(query: String) {
-        val token: String = getString(R.string.discogs_token)
-        val response = DiscogsService.getService().search(token, query = query)
+        val response = DiscogsService.getService().search(
+            token = BuildConfig.DISCOGS_API_TOKEN,
+            query = query
+        )
         if (response.isSuccessful) {
             _records.value = response.body()?.results
             //TODO: replace with model for UI consumption
