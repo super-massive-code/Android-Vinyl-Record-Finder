@@ -4,18 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.supermassivecode.vinylfinder.BuildConfig
-import com.supermassivecode.vinylfinder.R
-import com.supermassivecode.vinylfinder.data.remote.DiscogsService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
+import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import kotlinx.coroutines.launch
-import com.supermassivecode.vinylfinder.data.remote.model.Result
 
-class SearchScreenViewModel: ViewModel() {
+class SearchScreenViewModel(
+    private val discogsRepository: DiscogsRepository
+): ViewModel() {
 
-    private var _records = MutableLiveData<List<Result>>()
-    val records: LiveData<List<Result>> = _records
+    private var _records = MutableLiveData<List<RecordInfo>>()
+    val records: LiveData<List<RecordInfo>> = _records
 
     init {
         search("Carl Taylor Static")
@@ -28,13 +26,9 @@ class SearchScreenViewModel: ViewModel() {
     }
 
     private suspend fun searchDiscogs(query: String) {
-        val response = DiscogsService.getService().search(
-            token = BuildConfig.DISCOGS_API_TOKEN,
-            query = query
-        )
-        if (response.isSuccessful) {
-            _records.value = response.body()?.results
-            //TODO: replace with model for UI consumption
+        //TODO: get result code from repository for network offline / 500 etc?
+        discogsRepository.search(query).let {
+            _records.value = it
         }
     }
 }

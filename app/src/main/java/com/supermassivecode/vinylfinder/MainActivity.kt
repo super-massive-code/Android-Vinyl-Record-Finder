@@ -3,7 +3,6 @@ package com.supermassivecode.vinylfinder
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -15,10 +14,11 @@ import com.supermassivecode.vinylfinder.navigation.NavigationScreen
 import com.supermassivecode.vinylfinder.ui.screens.SearchScreen
 import com.supermassivecode.vinylfinder.ui.screens.SearchScreenViewModel
 import com.supermassivecode.vinylfinder.ui.theme.VinylFinderTheme
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
 
-    private val searchScreenViewModel: SearchScreenViewModel by viewModels()
+    private val searchScreenViewModel: SearchScreenViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

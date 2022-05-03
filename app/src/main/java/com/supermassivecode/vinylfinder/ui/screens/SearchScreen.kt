@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import com.supermassivecode.vinylfinder.data.remote.model.Result
 
 @Composable
@@ -45,7 +46,7 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
 }
 
 @Composable
-private fun List(records: List<Result>?) {
+private fun List(records: List<RecordInfo>?) {
     if (records != null) {
         LazyColumn(
             Modifier.fillMaxSize()
@@ -60,7 +61,7 @@ private fun List(records: List<Result>?) {
 }
 
 @Composable
-private fun RecordListItem(record: Result, onClick: () -> Unit) {
+private fun RecordListItem(record: RecordInfo, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -78,7 +79,7 @@ private fun RecordListItem(record: Result, onClick: () -> Unit) {
             ) {
                 AsyncImage(
                     modifier = Modifier.size(150.dp),
-                    model = record.thumb,
+                    model = record.thumbUrl,
                     contentDescription = record.title,
                     onLoading = {
                         //TODO: add loading image - how?
@@ -89,9 +90,9 @@ private fun RecordListItem(record: Result, onClick: () -> Unit) {
                 modifier = Modifier.padding(10.dp)
             ) {
                 Text(record.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                record.year?.let { Text(it) }
-                record.label?.first()?.let { Text(it) }
-                record.catno?.let { Text(it) }
+                Text(record.year)
+                Text(record.label)
+                Text(record.catno)
             }
         }
     }
