@@ -19,7 +19,7 @@ class SearchScreenViewModel(
     val isLoading: LiveData<Boolean> = _isLoading
 
     init {
-        search("Carl Taylor Static")
+        search("Bob")
     }
 
     fun search(query: String) {

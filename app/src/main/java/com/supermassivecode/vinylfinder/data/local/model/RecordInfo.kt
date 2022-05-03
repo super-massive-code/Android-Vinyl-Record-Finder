@@ -7,6 +7,6 @@ data class RecordInfo(
     val year: String,
     val label: String,
     val catno: String,
-    val remoteUrl: String,
+    val discogsDetailRemoteUrl: String,
+    val discogsRemoteId: Int
 )
-

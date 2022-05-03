@@ -22,7 +22,8 @@ class DiscogsRepository(
                     year = it.year ?: "",
                     label = it.label?.first() ?: "",
                     catno = it.catno ?:"",
-                    remoteUrl = it.resource_url
+                    discogsDetailRemoteUrl = it.resource_url,
+                    discogsRemoteId = it.id
                 )
             }
         }

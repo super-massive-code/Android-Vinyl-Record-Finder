@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
+import com.supermassivecode.vinylfinder.navigation.NavigationScreen
 
 @Composable
 fun SearchScreen(
@@ -33,7 +34,9 @@ fun SearchScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
             SearchBar { viewModel.search(it) }
-            List(viewModel.records.observeAsState().value)
+            List(viewModel.records.observeAsState().value) {
+                navController.navigate(NavigationScreen.Detail.createRoute(it.discogsRemoteId))
+            }
         }
 
         viewModel.isLoading.observeAsState().value.run {
@@ -71,14 +74,14 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
 }
 
 @Composable
-private fun List(records: List<RecordInfo>?) {
+private fun List(records: List<RecordInfo>?, onClick: (record: RecordInfo) -> Unit) {
     if (records != null) {
         LazyColumn(
             Modifier.fillMaxSize()
         ) {
             items(items = records) { record ->
                 RecordListItem(record = record, onClick = {
-                    //TODO: callback to viewModel, then?
+                    onClick(record)
                 })
             }
         }
