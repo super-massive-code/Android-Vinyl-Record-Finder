@@ -1,5 +1,5 @@
 package com.supermassivecode.vinylfinder.navigation
 
-enum class NavigationScreen() {
+enum class NavigationScreen {
     SEARCH_SCREEN
 }
