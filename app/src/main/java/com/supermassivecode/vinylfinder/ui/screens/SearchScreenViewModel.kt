@@ -13,7 +13,10 @@ class SearchScreenViewModel(
 ): ViewModel() {
 
     private var _records = MutableLiveData<List<RecordInfo>>()
+    private var _isLoading = MutableLiveData(false)
+
     val records: LiveData<List<RecordInfo>> = _records
+    val isLoading: LiveData<Boolean> = _isLoading
 
     init {
         search("Carl Taylor Static")
@@ -21,7 +24,9 @@ class SearchScreenViewModel(
 
     fun search(query: String) {
         viewModelScope.launch {
+            _isLoading.value = true
             searchDiscogs(query)
+            _isLoading.value = false
         }
     }
 
