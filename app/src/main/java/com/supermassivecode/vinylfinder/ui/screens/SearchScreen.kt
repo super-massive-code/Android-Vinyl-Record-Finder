@@ -96,7 +96,7 @@ private fun RecordListItem(record: RecordInfo, onClick: () -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp)
+                .wrapContentHeight()
         ) {
             Column(
                 modifier = Modifier
