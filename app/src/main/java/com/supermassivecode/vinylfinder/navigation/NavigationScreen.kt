@@ -1,10 +1,10 @@
 package com.supermassivecode.vinylfinder.navigation
 
-const val NAV_ARG_DISCOGS_REMOTE_ID = "discogsRemoteId"
+const val NAV_ARG_RECORD_INFO_JSON = "recordInfoJson"
 
 sealed class NavigationScreen(val route: String) {
     object Search : NavigationScreen("search")
-    object Detail : NavigationScreen("detail/{$NAV_ARG_DISCOGS_REMOTE_ID}") {
-        fun createRoute(discogsRemoteId: Int) = "detail/$discogsRemoteId"
+    object Detail : NavigationScreen("detail/{$NAV_ARG_RECORD_INFO_JSON}") {
+        fun createRoute(recordInfoJson: String) = "detail/$recordInfoJson"
     }
 }

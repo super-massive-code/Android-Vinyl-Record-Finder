@@ -12,11 +12,12 @@ class SearchScreenViewModel(
     private val discogsRepository: DiscogsRepository
 ): ViewModel() {
 
-    private var _records = MutableLiveData<List<RecordInfo>>()
     private var _isLoading = MutableLiveData(false)
-
-    val records: LiveData<List<RecordInfo>> = _records
     val isLoading: LiveData<Boolean> = _isLoading
+
+    private var _records = MutableLiveData<List<RecordInfo>>()
+    val records: LiveData<List<RecordInfo>> = _records
+
 
     init {
         search("Bob")

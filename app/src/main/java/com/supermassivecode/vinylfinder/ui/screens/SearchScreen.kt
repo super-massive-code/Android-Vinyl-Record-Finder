@@ -1,5 +1,6 @@
 package com.supermassivecode.vinylfinder.ui.screens
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,7 +36,7 @@ fun SearchScreen(
         Column(Modifier.fillMaxSize()) {
             SearchBar { viewModel.search(it) }
             List(viewModel.records.observeAsState().value) {
-                navController.navigate(NavigationScreen.Detail.createRoute(it.discogsRemoteId))
+                navController.navigate(NavigationScreen.Detail.createRoute(Uri.encode(it.toJson())))
             }
         }
 
@@ -107,7 +108,7 @@ private fun RecordListItem(record: RecordInfo, onClick: () -> Unit) {
             ) {
                 AsyncImage(
                     modifier = Modifier.size(150.dp),
-                    model = record.thumbUrl,
+                    model = record.imageUrl,
                     contentDescription = record.title,
                     onLoading = {
                         //TODO: add loading image - how?

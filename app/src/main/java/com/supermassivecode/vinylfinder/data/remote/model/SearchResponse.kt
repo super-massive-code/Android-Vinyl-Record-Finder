@@ -16,7 +16,6 @@ data class Pagination(
 @JsonClass(generateAdapter = true)
 data class Result(
     val id: Int,
-    val resource_url: String,
     val title: String,
     val thumb: String,
     val country: String?,

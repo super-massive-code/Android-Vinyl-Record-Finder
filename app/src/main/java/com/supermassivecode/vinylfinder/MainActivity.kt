@@ -12,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.supermassivecode.vinylfinder.navigation.NAV_ARG_DISCOGS_REMOTE_ID
+import com.supermassivecode.vinylfinder.navigation.NAV_ARG_RECORD_INFO_JSON
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
 import com.supermassivecode.vinylfinder.ui.screens.RecordDetailScreen
 import com.supermassivecode.vinylfinder.ui.screens.RecordDetailViewModel
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(
                             route = NavigationScreen.Detail.route,
-                            arguments = listOf(navArgument(NAV_ARG_DISCOGS_REMOTE_ID) {
+                            arguments = listOf(navArgument(NAV_ARG_RECORD_INFO_JSON) {
                                 type = NavType.StringType
                                 nullable = false
                             })
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                             RecordDetailScreen(
                                 navController,
                                 recordDetailViewModel,
-                                it.arguments!!.getString(NAV_ARG_DISCOGS_REMOTE_ID)!!
+                                it.arguments!!.getString(NAV_ARG_RECORD_INFO_JSON)!!
                             )
                         }
                     }
