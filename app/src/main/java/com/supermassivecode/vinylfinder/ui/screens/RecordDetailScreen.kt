@@ -13,12 +13,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun RecordDetailScreen(
     navController: NavController,
-    viewModel: RecordDetailViewModel,
-    recordJson: String
+    recordJson: String,
+    viewModel: RecordDetailViewModel = getViewModel()
 ) {
     viewModel.getReleaseDetail(RecordInfo.fromJson(recordJson)!!)
 

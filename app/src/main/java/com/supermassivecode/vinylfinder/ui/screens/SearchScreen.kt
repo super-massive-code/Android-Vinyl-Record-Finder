@@ -24,11 +24,12 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun SearchScreen(
     navController: NavController,
-    viewModel: SearchScreenViewModel
+    viewModel: SearchScreenViewModel = getViewModel()
 ) {
     Box(
         Modifier.fillMaxSize()
