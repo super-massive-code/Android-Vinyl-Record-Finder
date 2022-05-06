@@ -22,9 +22,11 @@ interface DiscogsService {
         // TODO: maybe add UI selector / ENUM for this ^ One of release, artist, label
     ): Response<SearchResponse>
 
+    /** Note: need to pass token to get complete data set */
     @GET("/releases/{releaseId}")
     suspend fun releaseDetail(
-        @Path("releaseId") releaseId: Int
+        @Path("releaseId") releaseId: Int,
+        @Query("token") token: String
     ): Response<ReleaseResponse>
 
     companion object {

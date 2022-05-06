@@ -38,16 +38,15 @@ class DiscogsRepository(
     }
 
     suspend fun releaseDetail(record: RecordInfo): RecordInfo? {
-        val response = DiscogsService.getService().releaseDetail(record.discogsRemoteId)
+        val response = DiscogsService.getService().releaseDetail(
+            token = BuildConfig.DISCOGS_API_TOKEN,
+            releaseId= record.discogsRemoteId
+        )
         if (response.isSuccessful) {
             response.body()?.let {
-                var imageUrl = it.images.first().resource_url
-                if (imageUrl.isNullOrBlank()) {
-                    imageUrl = record.imageUrl
-                }
                 return RecordInfo(
                     title = record.title,
-                    imageUrl = imageUrl,
+                    imageUrl = it.images.first().resource_url,
                     discogsRemoteId = record.discogsRemoteId,
                     country = record.country,
                     year = record.year,
