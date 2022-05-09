@@ -21,7 +21,7 @@ class RecordDetailViewModel(
     fun getReleaseDetail(record: RecordInfo) {
         viewModelScope.launch {
             _isLoading.value = true
-            searchDiscogs(record)
+//            searchDiscogs(record)
             _isLoading.value = false
         }
     }

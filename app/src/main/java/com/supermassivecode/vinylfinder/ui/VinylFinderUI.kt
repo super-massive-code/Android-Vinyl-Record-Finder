@@ -1,5 +1,6 @@
 package com.supermassivecode.vinylfinder.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -38,6 +39,7 @@ fun VinylFinderUI(
                     nullable = false
                 })
             ) {
+                Log.e("SMC", "BackStackTriggered")
                 RecordDetailScreen(
                     appState.navController,
                     it.arguments!!.getString(NAV_ARG_RECORD_INFO_JSON)!!
