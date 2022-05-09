@@ -41,7 +41,6 @@ fun VinylFinderUI(
             ) {
                 Log.e("SMC", "BackStackTriggered")
                 RecordDetailScreen(
-                    appState.navController,
                     it.arguments!!.getString(NAV_ARG_RECORD_INFO_JSON)!!
                 )
             }
