@@ -1,7 +1,6 @@
 package com.supermassivecode.vinylfinder.ui.screens
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,7 +39,7 @@ fun SearchScreen(
             SearchBar { viewModel.search(it) }
 
             val records by viewModel.records.observeAsState()
-            List(records) {
+            RecordList(records) {
                 navController.navigate(NavigationScreen.Detail.createRoute(Uri.encode(it.toJson())))
             }
 
@@ -82,7 +81,7 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
 }
 
 @Composable
-private fun List(records: List<RecordInfo>?, onClick: (record: RecordInfo) -> Unit) {
+private fun RecordList(records: List<RecordInfo>?, onClick: (record: RecordInfo) -> Unit) {
     if (records != null) {
         LazyColumn(
             Modifier.fillMaxSize()
