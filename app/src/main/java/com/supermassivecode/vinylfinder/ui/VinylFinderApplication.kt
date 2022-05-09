@@ -1,4 +1,4 @@
-package com.supermassivecode.vinylfinder
+package com.supermassivecode.vinylfinder.ui
 
 import android.app.Application
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
