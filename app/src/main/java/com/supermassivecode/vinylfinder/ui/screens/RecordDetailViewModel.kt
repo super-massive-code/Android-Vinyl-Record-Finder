@@ -20,15 +20,15 @@ class RecordDetailViewModel(
 
     fun getReleaseDetail(record: RecordInfo) {
         viewModelScope.launch {
-            _isLoading.value = true
-//            searchDiscogs(record)
-            _isLoading.value = false
+            _isLoading.postValue(true)
+            searchDiscogs(record)
+            _isLoading.postValue(false)
         }
     }
 
     private suspend fun searchDiscogs(record: RecordInfo) {
         discogsRepository.releaseDetail(record).let {
-            _record.value = it
+            _record.postValue(it)
         }
     }
 }

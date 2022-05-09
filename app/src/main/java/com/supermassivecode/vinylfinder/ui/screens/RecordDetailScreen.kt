@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -18,29 +21,35 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun RecordDetailScreen(
-    navController: NavController,
     recordJson: String,
     viewModel: RecordDetailViewModel = getViewModel()
 ) {
     Log.e("SMC", "Detail loaded")
-    viewModel.getReleaseDetail(RecordInfo.fromJson(recordJson)!!)
-
+    //so it only runs once
+    LaunchedEffect(Unit) {
+        Log.e("SMC", "Detail loaded network call")
+        viewModel.getReleaseDetail(RecordInfo.fromJson(recordJson)!!)
+    }
     Box(
         Modifier.fillMaxSize()
     ) {
+
         Column(Modifier.fillMaxSize()) {
-            viewModel.record.observeAsState().value.run {
+            // Look under the hood of observeAsState you'll see it using remember
+            val record by viewModel.record.observeAsState()
+
+            record?.apply {
                 //TODO: null check not idiomatic kotlin?
-                if (this != null) {
-                    Header(this)
-                }
+                Header(this)
                 // Tracklist
                 // Video's ?
             }
         }
 
-        viewModel.isLoading.observeAsState().value.run {
-            if (this!!) {
+        val isLoading by viewModel.isLoading.observeAsState()
+
+        isLoading?.apply {
+            if (this) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )
