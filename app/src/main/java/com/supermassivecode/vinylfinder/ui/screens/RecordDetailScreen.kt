@@ -10,11 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import org.koin.androidx.compose.getViewModel
@@ -37,19 +35,16 @@ fun RecordDetailScreen(
         Column(Modifier.fillMaxSize()) {
             // Look under the hood of observeAsState you'll see it using remember
             val record by viewModel.record.observeAsState()
-
-            record?.apply {
-                //TODO: null check not idiomatic kotlin?
-                Header(this)
-                // Tracklist
+            record?.let {
+                Header(it)
+                // Track list
                 // Video's ?
             }
         }
 
         val isLoading by viewModel.isLoading.observeAsState()
-
-        isLoading?.apply {
-            if (this) {
+        isLoading?.let {
+            if (it) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )

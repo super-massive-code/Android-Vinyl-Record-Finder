@@ -18,23 +18,22 @@ class SearchScreenViewModel(
     private var _records = MutableLiveData<List<RecordInfo>>()
     val records: LiveData<List<RecordInfo>> = _records
 
-
     init {
         search("Bob")
     }
 
     fun search(query: String) {
         viewModelScope.launch {
-            _isLoading.value = true
+            _isLoading.postValue(true)
             searchDiscogs(query)
-            _isLoading.value = false
+            _isLoading.postValue(false)
         }
     }
 
     private suspend fun searchDiscogs(query: String) {
         //TODO: get result code from repository for network offline / 500 etc?
         discogsRepository.search(query).let {
-            _records.value = it
+            _records.postValue(it)
         }
     }
 }

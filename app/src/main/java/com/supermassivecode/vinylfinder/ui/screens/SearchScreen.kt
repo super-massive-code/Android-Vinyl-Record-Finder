@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,14 +38,17 @@ fun SearchScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
             SearchBar { viewModel.search(it) }
-            List(viewModel.records.observeAsState().value) {
-                Log.e("SMC", "onClickShowDetail()")
+
+            val records by viewModel.records.observeAsState()
+            List(records) {
                 navController.navigate(NavigationScreen.Detail.createRoute(Uri.encode(it.toJson())))
             }
+
         }
 
-        viewModel.isLoading.observeAsState().value.run {
-            if (this!!) {
+        val isLoading by viewModel.isLoading.observeAsState()
+        isLoading?.let {
+            if (it) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
                 )
@@ -63,7 +67,7 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
         val textState = remember { mutableStateOf("") }
         TextField(
             value = textState.value,
-            onValueChange = { textState.value = it},
+            onValueChange = { textState.value = it },
             singleLine = true,
             label = { Text(text = "Search") },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
