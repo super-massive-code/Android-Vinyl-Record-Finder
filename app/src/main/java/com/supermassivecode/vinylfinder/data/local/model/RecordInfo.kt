@@ -12,7 +12,8 @@ data class RecordInfo(
     val year: String,
     val label: String,
     val catno: String,
-    val discogsRemoteId: Int
+    val discogsRemoteId: Int,
+    val tracks: List<RecordTrack>? = null
 ) {
     fun toJson(): String {
         return adapter().toJson(this)
@@ -27,3 +28,9 @@ data class RecordInfo(
         }
     }
 }
+
+@JsonClass(generateAdapter = true)
+data class RecordTrack(
+    val title: String,
+    val position: String
+)

@@ -87,7 +87,7 @@ private fun RecordList(records: List<RecordInfo>?, onClick: (record: RecordInfo)
             Modifier.fillMaxSize()
         ) {
             items(items = records) { record ->
-                RecordListItem(record = record, onClick = {
+                RecordItem(record = record, onClick = {
                     onClick(record)
                 })
             }
@@ -96,7 +96,7 @@ private fun RecordList(records: List<RecordInfo>?, onClick: (record: RecordInfo)
 }
 
 @Composable
-private fun RecordListItem(record: RecordInfo, onClick: () -> Unit) {
+fun RecordItem(record: RecordInfo, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(8.dp)
