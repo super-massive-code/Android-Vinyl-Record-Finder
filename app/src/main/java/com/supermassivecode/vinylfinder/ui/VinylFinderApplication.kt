@@ -14,7 +14,7 @@ class VinylFinderApplication :  Application(), KoinComponent {
 
     private val koinModule = module {
         single { this }
-        single { DiscogsRepository(get()) }
+        single { DiscogsRepository() }
         viewModel { SearchScreenViewModel(get()) }
         viewModel { RecordDetailViewModel(get()) }
     }
