@@ -19,7 +19,6 @@ interface DiscogsService {
         @Query("token") token: String,
         @Query("q") query: String,
         @Query("type") type:String = "release"
-        // TODO: maybe add UI selector / ENUM for this ^ One of release, artist, label
     ): Response<SearchResponse>
 
     /** Note: need to pass token to get complete data set */
