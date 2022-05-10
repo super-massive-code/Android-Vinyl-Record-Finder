@@ -2,6 +2,7 @@ package com.supermassivecode.vinylfinder.ui
 
 import android.app.Application
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
+import com.supermassivecode.vinylfinder.data.local.WantedRecordsRepository
 import com.supermassivecode.vinylfinder.ui.screens.RecordDetailViewModel
 import com.supermassivecode.vinylfinder.ui.screens.SearchScreenViewModel
 import org.koin.android.ext.koin.androidContext
@@ -15,8 +16,9 @@ class VinylFinderApplication :  Application(), KoinComponent {
     private val koinModule = module {
         single { this }
         single { DiscogsRepository() }
+        single { WantedRecordsRepository() }
         viewModel { SearchScreenViewModel(get()) }
-        viewModel { RecordDetailViewModel(get()) }
+        viewModel { RecordDetailViewModel(get(), get()) }
     }
 
     override fun onCreate() {

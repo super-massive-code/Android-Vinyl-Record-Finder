@@ -5,11 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
+import com.supermassivecode.vinylfinder.data.local.WantedRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import kotlinx.coroutines.launch
 
 class RecordDetailViewModel(
-    private val discogsRepository: DiscogsRepository
+    private val discogsRepository: DiscogsRepository,
+    private val wantedRecordsRepository: WantedRecordsRepository
 ): ViewModel() {
 
     private var _isLoading = MutableLiveData(false)
@@ -31,4 +33,10 @@ class RecordDetailViewModel(
             _record.postValue(it)
         }
     }
+
+    fun addRecordToWatchList(recordInfo: RecordInfo) {
+        wantedRecordsRepository.addRecord(recordInfo)
+    }
+
+    //TODO: check if record is in list for whether to show/hide/colour the add button
 }
