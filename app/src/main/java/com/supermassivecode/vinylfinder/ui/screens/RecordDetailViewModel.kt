@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.supermassivecode.vinylfinder.R
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
 import com.supermassivecode.vinylfinder.data.local.WantedRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
@@ -14,23 +15,19 @@ class RecordDetailViewModel(
     private val wantedRecordsRepository: WantedRecordsRepository
 ): ViewModel() {
 
-    private var _isLoading = MutableLiveData(false)
-    val isLoading: LiveData<Boolean> = _isLoading
-
-    private var _record = MutableLiveData<RecordInfo>()
-    val record: LiveData<RecordInfo> = _record
+    private var _state = MutableLiveData<UiState<RecordInfo>>()
+    val state: LiveData<UiState<RecordInfo>> = _state
 
     fun getReleaseDetail(record: RecordInfo) {
         viewModelScope.launch {
-            _isLoading.postValue(true)
             searchDiscogs(record)
-            _isLoading.postValue(false)
         }
     }
 
     private suspend fun searchDiscogs(record: RecordInfo) {
+        _state.postValue(UiState(isLoading = true))
         discogsRepository.releaseDetail(record).let {
-            _record.postValue(it)
+            _state.postValue(UiState(data = it.data, alertStringId = it.errorStringId))
         }
     }
 

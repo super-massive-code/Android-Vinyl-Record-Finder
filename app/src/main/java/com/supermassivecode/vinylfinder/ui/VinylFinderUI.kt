@@ -30,7 +30,7 @@ fun VinylFinderUI(
             composable(
                 route = NavigationScreen.Search.route
             ) {
-                SearchScreen(appState.navController)
+                SearchScreen(appState.navController, appState.context)
             }
             composable(
                 route = NavigationScreen.Detail.route,
@@ -41,7 +41,8 @@ fun VinylFinderUI(
             ) {
                 Log.e("SMC", "BackStackTriggered")
                 RecordDetailScreen(
-                    it.arguments!!.getString(NAV_ARG_RECORD_INFO_JSON)!!
+                    it.arguments!!.getString(NAV_ARG_RECORD_INFO_JSON)!!,
+                    appState.context
                 )
             }
         }

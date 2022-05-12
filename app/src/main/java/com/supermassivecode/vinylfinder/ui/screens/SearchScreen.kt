@@ -1,5 +1,6 @@
 package com.supermassivecode.vinylfinder.ui.screens
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,33 +26,36 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
+import com.supermassivecode.vinylfinder.ui.GenericAlertDialog
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun SearchScreen(
     navController: NavController,
+    context: Context,
     viewModel: SearchScreenViewModel = getViewModel()
 ) {
+
+    val state by viewModel.state.observeAsState()
+
     Box(
         Modifier.fillMaxSize()
     ) {
         Column(Modifier.fillMaxSize()) {
             SearchBar { viewModel.search(it) }
-
-            val records by viewModel.records.observeAsState()
-            RecordList(records) {
+            RecordList(state?.data) {
                 navController.navigate(NavigationScreen.Detail.createRoute(Uri.encode(it.toJson())))
             }
-
         }
 
-        val isLoading by viewModel.isLoading.observeAsState()
-        isLoading?.let {
-            if (it) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
+        if (state?.isLoading == true) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
+
+        state?.alertStringId?.let {
+            GenericAlertDialog(context, state!!.alertStringId!!)
         }
     }
 }

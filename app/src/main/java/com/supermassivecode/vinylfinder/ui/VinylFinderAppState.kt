@@ -7,8 +7,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
-//TODO: consider replacing nav with: https://github.com/raamcosta/compose-destinations
-
 @Composable
 fun rememberVinylFinderAppState(
     navController: NavHostController = rememberNavController(),
@@ -19,9 +17,5 @@ fun rememberVinylFinderAppState(
 
 class VinylFinderAppState(
     val navController: NavHostController,
-    private val context: Context
-) {
-    fun navigateBack() {
-        navController.popBackStack()
-    }
-}
+    val context: Context
+)

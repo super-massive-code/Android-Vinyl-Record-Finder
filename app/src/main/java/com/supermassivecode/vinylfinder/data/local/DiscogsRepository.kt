@@ -4,6 +4,7 @@ import com.supermassivecode.vinylfinder.BuildConfig
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import com.supermassivecode.vinylfinder.data.local.model.RecordTrack
 import com.supermassivecode.vinylfinder.data.remote.DiscogsService
+import com.supermassivecode.vinylfinder.data.remote.Response
 
 class DiscogsRepository {
     /**
@@ -14,53 +15,54 @@ class DiscogsRepository {
      * 3. Cache release details also?
      */
 
-    suspend fun search(query: String): List<RecordInfo>? {
+    suspend fun search(query: String): Response<List<RecordInfo>?> {
         val response = DiscogsService.getService().search(
             token = BuildConfig.DISCOGS_API_TOKEN,
             query = query
         )
         if (response.isSuccessful) {
-            return response.body()?.results?.map {
+            return Response(response.body()?.results?.map {
                 RecordInfo(
                     title = it.title,
                     imageUrl = it.thumb,
                     country = it.country ?: "",
                     year = it.year ?: "",
                     label = it.label?.first() ?: "",
-                    catno = it.catno ?:"",
+                    catno = it.catno ?: "",
                     discogsRemoteId = it.id
                 )
-            }
+            })
         }
-        return null
+        return Response(errorStringId = Response.parseServerErrorCode(response.code()))
     }
 
-    //TODO: wrap these responses back to call site in data object <T> + response success/fail
-
-    suspend fun releaseDetail(record: RecordInfo): RecordInfo? {
+    suspend fun releaseDetail(record: RecordInfo): Response<RecordInfo> {
         val response = DiscogsService.getService().releaseDetail(
             token = BuildConfig.DISCOGS_API_TOKEN,
-            releaseId= record.discogsRemoteId
+            releaseId = record.discogsRemoteId
         )
         if (response.isSuccessful) {
             response.body()?.let { detail ->
-                return RecordInfo(
-                    title = record.title,
-                    imageUrl = detail.images.first().resource_url,
-                    discogsRemoteId = record.discogsRemoteId,
-                    country = record.country,
-                    year = record.year,
-                    label = record.label,
-                    catno = record.catno,
-                    tracks = detail.tracklist.map { track ->
-                        RecordTrack(
-                            title = track.title,
-                            position = track.position
-                        )
-                    }
+                return Response(
+                    RecordInfo(
+                        title = record.title,
+                        imageUrl = detail.images.first().resource_url,
+                        discogsRemoteId = record.discogsRemoteId,
+                        country = record.country,
+                        year = record.year,
+                        label = record.label,
+                        catno = record.catno,
+                        tracks = detail.tracklist.map { track ->
+                            RecordTrack(
+                                title = track.title,
+                                position = track.position
+                            )
+                        }
+                    )
                 )
+
             }
         }
-        return null
+        return Response(errorStringId = Response.parseServerErrorCode(response.code()))
     }
 }

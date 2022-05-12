@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Vinyl Finder</string>
+
+    <string name="server_error_400">Bad Request</string>
+    <string name="server_error_401">Unauthorized</string>
+    <string name="server_error_403">Forbidden</string>
+    <string name="server_error_404">Not Found</string>
+    <string name="server_error_500">Internal Server Error</string>
+    <string name="server_error_generic">There has been an error</string>
+
 </resources>

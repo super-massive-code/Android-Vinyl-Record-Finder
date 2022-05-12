@@ -4,19 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.supermassivecode.vinylfinder.R
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import kotlinx.coroutines.launch
 
 class SearchScreenViewModel(
     private val discogsRepository: DiscogsRepository
-): ViewModel() {
+) : ViewModel() {
 
-    private var _isLoading = MutableLiveData(false)
-    val isLoading: LiveData<Boolean> = _isLoading
-
-    private var _records = MutableLiveData<List<RecordInfo>>()
-    val records: LiveData<List<RecordInfo>> = _records
+    private var _state = MutableLiveData<UiState<List<RecordInfo>>>()
+    val state: LiveData<UiState<List<RecordInfo>>> = _state
 
     init {
         search("Bob")
@@ -24,16 +22,14 @@ class SearchScreenViewModel(
 
     fun search(query: String) {
         viewModelScope.launch {
-            _isLoading.postValue(true)
             searchDiscogs(query)
-            _isLoading.postValue(false)
         }
     }
 
     private suspend fun searchDiscogs(query: String) {
-        //TODO: get result code from repository for network offline / 500 etc?
+        _state.postValue(UiState(isLoading = true))
         discogsRepository.search(query).let {
-            _records.postValue(it)
+            _state.postValue(UiState(data = it.data, alertStringId = it.errorStringId))
         }
     }
 }
