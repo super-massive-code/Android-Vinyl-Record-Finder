@@ -1,5 +1,6 @@
 package com.supermassivecode.vinylfinder.ui.screens
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,13 +11,24 @@ import com.supermassivecode.vinylfinder.data.local.WantedRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import kotlinx.coroutines.launch
 
+sealed interface DetailUiState {
+    object Loading : DetailUiState
+    data class Error(@StringRes val alertStringId: Int) : DetailUiState
+    data class Success(val data: RecordInfo) : DetailUiState
+}
+
+
 class RecordDetailViewModel(
     private val discogsRepository: DiscogsRepository,
     private val wantedRecordsRepository: WantedRecordsRepository
-): ViewModel() {
+) : ViewModel() {
 
-    private var _state = MutableLiveData<UiState<RecordInfo>>()
-    val state: LiveData<UiState<RecordInfo>> = _state
+    private var _state = MutableLiveData<DetailUiState>()
+    val state: LiveData<DetailUiState> = _state
+
+    init {
+        _state.postValue(DetailUiState.Loading)
+    }
 
     fun getReleaseDetail(record: RecordInfo) {
         viewModelScope.launch {
@@ -25,9 +37,12 @@ class RecordDetailViewModel(
     }
 
     private suspend fun searchDiscogs(record: RecordInfo) {
-        _state.postValue(UiState(isLoading = true))
         discogsRepository.releaseDetail(record).let {
-            _state.postValue(UiState(data = it.data, alertStringId = it.errorStringId))
+            if (it.data != null) {
+                _state.postValue(DetailUiState.Success(data = it.data))
+            } else {
+                _state.postValue(DetailUiState.Error(it.errorStringId!!))
+            }
         }
     }
 

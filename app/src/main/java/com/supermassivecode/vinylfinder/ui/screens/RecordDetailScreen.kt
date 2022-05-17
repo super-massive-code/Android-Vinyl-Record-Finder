@@ -39,21 +39,19 @@ fun RecordDetailScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
 
-            state?.data?.let { recordInfo ->
-                Header(recordInfo) { viewModel.addRecordToWatchList(recordInfo) }
-                recordInfo.tracks?.let { Tracks(it) }
+            when (val s = state) {
+                is DetailUiState.Loading ->
+                    CircularProgressIndicator(
+                        //TODO Centre not working as its in a column
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                is DetailUiState.Success -> {
+                    Header(s.data) { viewModel.addRecordToWatchList(s.data) }
+                    s.data.tracks?.let { Tracks(it) }
+                }
+                is DetailUiState.Error -> GenericAlertDialog(context, s.alertStringId)
+                null -> {}
             }
-        }
-
-            if (state?.isLoading == true) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-
-        state?.alertStringId?.let {
-            GenericAlertDialog(context, state!!.alertStringId!!)
-            // TODO: need a hook into onDismissed to pop back stack
         }
     }
 }
