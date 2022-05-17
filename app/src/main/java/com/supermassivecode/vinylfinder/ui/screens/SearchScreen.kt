@@ -35,28 +35,33 @@ fun SearchScreen(
     context: Context,
     viewModel: SearchScreenViewModel = getViewModel()
 ) {
-    Box(
+    val state by viewModel.state.observeAsState()
+
+    Column(
         Modifier.fillMaxSize(),
     ) {
-        Column(Modifier.fillMaxSize()) {
-            SearchBar { viewModel.search(it) }
-
-            val state by viewModel.state.observeAsState()
+        SearchBar { viewModel.search(it) }
+        Box(
+            Modifier.fillMaxSize()
+        ) {
             when (val s = state) {
                 is SearchUiState.Loading ->
                     CircularProgressIndicator(
                         modifier = Modifier
-                                //TODO Centre not working as its in a column
-                            .align(Alignment.CenterHorizontally)
+                            .align(Alignment.Center)
                     )
-                is SearchUiState.Success -> RecordList(s.data) { selectedRecord ->
-                    navController.navigate(
-                        NavigationScreen.Detail.createRoute(
-                            Uri.encode(
-                                selectedRecord.toJson()
+                is SearchUiState.Success -> {
+
+                    RecordList(s.data) { selectedRecord ->
+                        navController.navigate(
+                            NavigationScreen.Detail.createRoute(
+                                Uri.encode(
+                                    selectedRecord.toJson()
+                                )
                             )
                         )
-                    )
+                    }
+
                 }
                 is SearchUiState.Error -> GenericAlertDialog(context, s.alertStringId)
                 null -> {}

@@ -37,21 +37,19 @@ fun RecordDetailScreen(
     Box(
         Modifier.fillMaxSize()
     ) {
-        Column(Modifier.fillMaxSize()) {
-
-            when (val s = state) {
-                is DetailUiState.Loading ->
-                    CircularProgressIndicator(
-                        //TODO Centre not working as its in a column
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                is DetailUiState.Success -> {
+        when (val s = state) {
+            is DetailUiState.Loading ->
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            is DetailUiState.Success -> {
+                Column(Modifier.fillMaxSize()) {
                     Header(s.data) { viewModel.addRecordToWatchList(s.data) }
                     s.data.tracks?.let { Tracks(it) }
                 }
-                is DetailUiState.Error -> GenericAlertDialog(context, s.alertStringId)
-                null -> {}
             }
+            is DetailUiState.Error -> GenericAlertDialog(context, s.alertStringId)
+            null -> {}
         }
     }
 }
