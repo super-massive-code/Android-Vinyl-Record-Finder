@@ -47,7 +47,10 @@ class RecordDetailViewModel(
     }
 
     fun addRecordToWatchList(recordInfo: RecordInfo) {
-        wantedRecordsRepository.addRecord(recordInfo)
+        viewModelScope.launch {
+            val bob =  wantedRecordsRepository.getAll()
+            wantedRecordsRepository.addRecord(recordInfo)
+        }
     }
 
     //TODO: check if record is in list for whether to show/hide/colour the add button
