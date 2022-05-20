@@ -3,9 +3,11 @@ package com.supermassivecode.vinylfinder.ui
 import android.app.Application
 import androidx.room.Room
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
-import com.supermassivecode.vinylfinder.data.local.WantedRecordsRepository
+import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.room.VinylFinderRoomDatabase
 import com.supermassivecode.vinylfinder.data.local.room.WantedRecordDao
+import com.supermassivecode.vinylfinder.data.local.DiscogsWantedRecordWorker
+import com.supermassivecode.vinylfinder.data.local.room.FoundRecordDao
 import com.supermassivecode.vinylfinder.ui.screens.RecordDetailViewModel
 import com.supermassivecode.vinylfinder.ui.screens.SearchScreenViewModel
 import org.koin.android.ext.koin.androidContext
@@ -19,10 +21,12 @@ class VinylFinderApplication :  Application(), KoinComponent {
     private val koinModule = module {
         single { this }
         single { DiscogsRepository() }
-        single { WantedRecordsRepository(get()) }
+        single { WantedFoundRecordsRepository(get(), get()) }
         single { provideDatabase(get()) }
         single { provideWantedRecordDao(get()) }
-        viewModel { SearchScreenViewModel(get()) }
+        single { provideFoundRecordDao(get())  }
+        single { DiscogsWantedRecordWorker(get(), get()) }
+        viewModel { SearchScreenViewModel(get(), get()) }
         viewModel { RecordDetailViewModel(get(), get()) }
     }
 
@@ -35,6 +39,10 @@ class VinylFinderApplication :  Application(), KoinComponent {
 
     private fun provideWantedRecordDao(database: VinylFinderRoomDatabase): WantedRecordDao {
         return database.wantedRecordDao()
+    }
+
+    private fun provideFoundRecordDao(database: VinylFinderRoomDatabase): FoundRecordDao {
+        return database.foundRecordDao()
     }
 
     override fun onCreate() {

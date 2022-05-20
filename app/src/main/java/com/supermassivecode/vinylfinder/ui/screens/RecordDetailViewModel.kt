@@ -5,9 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.supermassivecode.vinylfinder.R
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
-import com.supermassivecode.vinylfinder.data.local.WantedRecordsRepository
+import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import kotlinx.coroutines.launch
 
@@ -20,7 +19,7 @@ sealed interface DetailUiState {
 
 class RecordDetailViewModel(
     private val discogsRepository: DiscogsRepository,
-    private val wantedRecordsRepository: WantedRecordsRepository
+    private val wantedFoundRecordsRepository: WantedFoundRecordsRepository
 ) : ViewModel() {
 
     private var _state = MutableLiveData<DetailUiState>()
@@ -48,8 +47,8 @@ class RecordDetailViewModel(
 
     fun addRecordToWatchList(recordInfo: RecordInfo) {
         viewModelScope.launch {
-            val bob =  wantedRecordsRepository.getAll()
-            wantedRecordsRepository.addRecord(recordInfo)
+            val bob =  wantedFoundRecordsRepository.getAllWantedRecords()
+            wantedFoundRecordsRepository.addWantedRecord(recordInfo)
         }
     }
 

@@ -6,23 +6,22 @@ import java.util.*
 @Entity
 data class WantedRecord(
     @PrimaryKey val uid: String = UUID.randomUUID().toString(),
+    @ColumnInfo(name = "discogs_remote_id") val discogsRemoteId: Int,
     @ColumnInfo(name = "record_title") val recordTitle: String,
-    @ColumnInfo(name = "cat_no") val catNo: String
+    @ColumnInfo(name = "cat_no") val catNo: String,
+    @ColumnInfo(name = "label") val label: String,
+    @ColumnInfo(name = "year") val year: String
 )
-
-/**
- * TODO: do we need more than record_title & cat_no?
- */
 
 @Dao
 interface WantedRecordDao {
 
     @Query("SELECT * FROM WantedRecord")
-    fun getAll(): List<WantedRecord>
+    suspend fun getAll(): List<WantedRecord>
 
     @Insert
-    fun insert(vararg record: WantedRecord)
+    suspend fun insert(record: WantedRecord)
 
     @Delete
-    fun delete(record: WantedRecord)
+    suspend fun delete(record: WantedRecord)
 }

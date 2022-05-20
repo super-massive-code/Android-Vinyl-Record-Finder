@@ -35,6 +35,9 @@ fun SearchScreen(
     context: Context,
     viewModel: SearchScreenViewModel = getViewModel()
 ) {
+
+    viewModel.testDoWork()
+
     val state by viewModel.state.observeAsState()
 
     Column(
