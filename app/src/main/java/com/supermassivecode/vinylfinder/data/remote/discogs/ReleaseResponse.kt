@@ -1,4 +1,4 @@
-package com.supermassivecode.vinylfinder.data.remote.model
+package com.supermassivecode.vinylfinder.data.remote.discogs
 
 import com.squareup.moshi.JsonClass
 

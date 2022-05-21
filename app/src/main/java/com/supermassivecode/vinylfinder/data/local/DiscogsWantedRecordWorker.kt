@@ -1,5 +1,6 @@
 package com.supermassivecode.vinylfinder.data.local
 
+import com.supermassivecode.vinylfinder.data.CurrencyUtils
 import com.supermassivecode.vinylfinder.data.local.model.FoundRecordInfo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -12,32 +13,28 @@ import org.jsoup.select.Elements
 
 class DiscogsWantedRecordWorker(
     private val wantedFoundRecordsRepository: WantedFoundRecordsRepository,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
+    private val currencyUtils: CurrencyUtils,
 ) : WantedRecordWorker {
 
     /**
      * Search Discogs MarketPlace
-     * Pass in 1 record or multiple OR passing Wanted Records repository?
-     * If match found, write back to Wanted Records repository with URL
      * trigger send of local message or email (should this just watch repository for results?)
      */
-
 
     override suspend fun doWork() {
         //TODO add delay so not hammering website or do this externally from call site?
         //TODO get max price from UI / DB
-        //TODO get local currency symbol from?
-
+        //TODO how to detect previously scraped records? seller name
         wantedFoundRecordsRepository.getAllWantedRecords().map { wantedRecord ->
             scrapeRelease(
                 id = wantedRecord.discogsRemoteId,
                 maxPrice = 100F,
-                localCurrencySymbol = "$"
+                localCurrencySymbol = currencyUtils.localSymbol()
             ).map { foundRecord ->
-                wantedFoundRecordsRepository.addFoundRecord(
+                wantedFoundRecordsRepository.addFoundRecordIfNotExists(
                     wantedRecord.uid,
-                    foundRecord.url,
-                    notes = foundRecord.notes
+                    foundRecord,
                 )
             }
         }
@@ -57,6 +54,7 @@ class DiscogsWantedRecordWorker(
         val table: Element = doc.getElementsByClass("table_block")[0]
         val rows: Elements = table.getElementsByTag("tr")
         val available = Elements()
+        // Remove table header
         rows.removeAt(0)
 
         for (row in rows) {
@@ -85,7 +83,9 @@ class DiscogsWantedRecordWorker(
                 found.add(
                     FoundRecordInfo(
                         url = url,
-                        notes = "Seller name: $sellerName"
+                        seller = "$sellerName discogs",
+                        price = justPrice,
+                        currency = localCurrencySymbol
                     )
                 )
             }

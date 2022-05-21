@@ -3,7 +3,7 @@ package com.supermassivecode.vinylfinder.data.local
 import com.supermassivecode.vinylfinder.BuildConfig
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import com.supermassivecode.vinylfinder.data.local.model.RecordTrack
-import com.supermassivecode.vinylfinder.data.remote.DiscogsService
+import com.supermassivecode.vinylfinder.data.remote.discogs.DiscogsService
 import com.supermassivecode.vinylfinder.data.remote.Response
 
 class DiscogsRepository {

@@ -1,5 +1,6 @@
 package com.supermassivecode.vinylfinder.data.local
 
+import com.supermassivecode.vinylfinder.data.local.model.FoundRecordInfo
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
 import com.supermassivecode.vinylfinder.data.local.room.FoundRecord
 import com.supermassivecode.vinylfinder.data.local.room.FoundRecordDao
@@ -11,15 +12,15 @@ class WantedFoundRecordsRepository(
     private val foundRecordDao: FoundRecordDao
 ) {
     suspend fun addWantedRecord(recordInfo: RecordInfo) {
-            wantedRecordDao.insert(
-                WantedRecord(
-                    discogsRemoteId = recordInfo.discogsRemoteId,
-                    recordTitle = recordInfo.title,
-                    catNo = recordInfo.catno,
-                    year = recordInfo.year,
-                    label = recordInfo.label
-                )
+        wantedRecordDao.insert(
+            WantedRecord(
+                discogsRemoteId = recordInfo.discogsRemoteId,
+                recordTitle = recordInfo.title,
+                catNo = recordInfo.catno,
+                year = recordInfo.year,
+                label = recordInfo.label
             )
+        )
 
     }
 
@@ -28,17 +29,19 @@ class WantedFoundRecordsRepository(
         return wantedRecordDao.getAll()
     }
 
-    suspend fun addFoundRecord(
-        parentWantedRecordId: String,
-        url: String,
-        notes: String? = null) {
+    suspend fun addFoundRecordIfNotExists(parentId: String, found: FoundRecordInfo) {
+        if (!foundRecordDao.exists(found.url, found.seller, found.price)) {
             foundRecordDao.insert(
                 FoundRecord(
-                    wantedRecordId = parentWantedRecordId,
-                    url = url,
-                    notes = notes ?: ""
+                    wantedRecordId = parentId,
+                    url = found.url,
+                    notes = found.notes,
+                    price = found.price,
+                    seller = found.seller,
+                    currency = found.currency
                 )
             )
+        }
     }
 
     suspend fun getFoundRecordsForParent(parentWantedRecordId: String): List<FoundRecord> {

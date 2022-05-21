@@ -1,9 +1,7 @@
-package com.supermassivecode.vinylfinder.data.remote
+package com.supermassivecode.vinylfinder.data.remote.discogs
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.supermassivecode.vinylfinder.data.remote.model.ReleaseResponse
-import com.supermassivecode.vinylfinder.data.remote.model.SearchResponse
 import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
