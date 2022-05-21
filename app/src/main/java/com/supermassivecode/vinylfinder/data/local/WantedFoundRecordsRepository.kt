@@ -24,16 +24,17 @@ class WantedFoundRecordsRepository(
 
     }
 
-    suspend fun getAllWantedRecordsDTO(): List<RecordInfoDTO> {
-        //TODO combine with group search to return associated found records?
-        return wantedRecordDao.getAll().map {
-            RecordInfoDTO(
-                title = it.recordTitle,
-                year = it.year,
-                label = it.label,
-                catno = it.catNo,
-                discogsRemoteId = it.discogsRemoteId
+    suspend fun getAllWantedRecordsDTO(): List<Map<RecordInfoDTO, Int>> {
+        return wantedRecordDao.getAll().map { wanted ->
+            val found = foundRecordDao.getAllForWantedRecord(wanted.uid)
+            val dto = RecordInfoDTO(
+                title = wanted.recordTitle,
+                year = wanted.year,
+                label = wanted.label,
+                catno = wanted.catNo,
+                discogsRemoteId = wanted.discogsRemoteId
             )
+            mapOf(Pair(dto, found.size))
         }
     }
 

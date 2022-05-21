@@ -36,7 +36,7 @@ fun WantedRecordsScreen(
 }
 
 @Composable
-private fun RecordList(records: List<RecordInfoDTO>) {
+private fun RecordList(records: List<Map<RecordInfoDTO, Int>>) {
     LazyColumn(
         Modifier.fillMaxSize()
     ) {
@@ -47,7 +47,9 @@ private fun RecordList(records: List<RecordInfoDTO>) {
 }
 
 @Composable
-private fun RecordItem(record: RecordInfoDTO) {
+private fun RecordItem(map: Map<RecordInfoDTO, Int>) {
+    val record: RecordInfoDTO = map.keys.first()
+    val foundCount = map.values.first()
     Card(
        modifier = Modifier
            .padding(8.dp)

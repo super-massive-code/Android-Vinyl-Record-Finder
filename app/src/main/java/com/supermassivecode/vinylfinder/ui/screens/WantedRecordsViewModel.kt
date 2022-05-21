@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 sealed interface WantedRecordsUiState {
     data class Error(@StringRes val alertStringId: Int) : WantedRecordsUiState
-    data class Success(val data: List<RecordInfoDTO>) : WantedRecordsUiState
+    data class Success(val data: List<Map<RecordInfoDTO, Int>>) : WantedRecordsUiState
 }
 
 class WantedRecordsViewModel(
