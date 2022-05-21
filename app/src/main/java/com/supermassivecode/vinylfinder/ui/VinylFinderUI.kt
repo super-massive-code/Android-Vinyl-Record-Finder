@@ -38,7 +38,7 @@ fun VinylFinderUI(
 }
 
 @Composable
-fun ScreenController(appState: VinylFinderAppState) {
+private fun ScreenController(appState: VinylFinderAppState) {
     NavHost(
         appState.navController,
         startDestination = NavigationScreen.Search.route
@@ -70,7 +70,7 @@ fun ScreenController(appState: VinylFinderAppState) {
 }
 
 @Composable
-fun BottomBar(navHostController: NavHostController) {
+private fun BottomBar(navHostController: NavHostController) {
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     BottomNavigation(
