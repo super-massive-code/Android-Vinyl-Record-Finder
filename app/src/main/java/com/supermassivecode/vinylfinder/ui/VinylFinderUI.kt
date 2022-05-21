@@ -2,13 +2,19 @@ package com.supermassivecode.vinylfinder.ui
 
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.supermassivecode.vinylfinder.navigation.NAV_ARG_RECORD_INFO_JSON
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
@@ -24,33 +30,68 @@ fun VinylFinderUI(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        NavHost(
-            appState.navController,
-            startDestination = NavigationScreen.Wanted.route
+        Scaffold(
+            bottomBar = { BottomBar(navHostController = appState.navController) },
+            content = { ScreenController(appState = appState) }
+        )
+    }
+}
+
+@Composable
+fun ScreenController(appState: VinylFinderAppState) {
+    NavHost(
+        appState.navController,
+        startDestination = NavigationScreen.Search.route
+    ) {
+        composable(
+            route = NavigationScreen.Search.route
         ) {
-            composable(
-                route = NavigationScreen.Search.route
-            ) {
-                SearchScreen(appState.navController, appState.context)
-            }
-            composable(
-                route = NavigationScreen.Detail.route,
-                arguments = listOf(navArgument(NAV_ARG_RECORD_INFO_JSON) {
-                    type = NavType.StringType
-                    nullable = false
-                })
-            ) {
-                Log.e("SMC", "BackStackTriggered")
-                RecordDetailScreen(
-                    it.arguments!!.getString(NAV_ARG_RECORD_INFO_JSON)!!,
-                    appState.context
-                )
-            }
-            composable(
-                route = NavigationScreen.Wanted.route
-            ) {
-                WantedRecordsScreen(appState.navController, appState.context)
-            }
+            SearchScreen(appState.navController, appState.context)
         }
+        composable(
+            route = NavigationScreen.Detail.route,
+            arguments = listOf(navArgument(NAV_ARG_RECORD_INFO_JSON) {
+                type = NavType.StringType
+                nullable = false
+            })
+        ) {
+            Log.e("SMC", "BackStackTriggered")
+            RecordDetailScreen(
+                it.arguments!!.getString(NAV_ARG_RECORD_INFO_JSON)!!,
+                appState.context
+            )
+        }
+        composable(
+            route = NavigationScreen.Wanted.route
+        ) {
+            WantedRecordsScreen(appState.navController, appState.context)
+        }
+    }
+}
+
+@Composable
+fun BottomBar(navHostController: NavHostController) {
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    BottomNavigation(
+        elevation = 12.dp
+    ) {
+        BottomNavigationItem(
+            icon = { Icon(Icons.Default.Search, "Search Icon") },
+            selected = currentRoute == NavigationScreen.Search.route,
+            onClick = {
+                navHostController.navigate(NavigationScreen.Search.route) {
+                    restoreState = true
+                    //TODO need to save state, where?
+                }
+            }
+        )
+        BottomNavigationItem(
+            icon = { Icon(Icons.Default.List, "Wants List Icon") },
+            selected = currentRoute == NavigationScreen.Wanted.route,
+            onClick = {
+                navHostController.navigate(NavigationScreen.Wanted.route)
+            }
+        )
     }
 }
