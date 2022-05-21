@@ -7,4 +7,5 @@ sealed class NavigationScreen(val route: String) {
     object Detail : NavigationScreen("detail/{$NAV_ARG_RECORD_INFO_JSON}") {
         fun createRoute(recordInfoJson: String) = "detail/$recordInfoJson"
     }
+    object Wanted : NavigationScreen("wanted")
 }

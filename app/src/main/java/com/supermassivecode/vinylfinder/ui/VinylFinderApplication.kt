@@ -11,6 +11,7 @@ import com.supermassivecode.vinylfinder.data.local.room.VinylFinderRoomDatabase
 import com.supermassivecode.vinylfinder.data.local.room.WantedRecordDao
 import com.supermassivecode.vinylfinder.ui.screens.RecordDetailViewModel
 import com.supermassivecode.vinylfinder.ui.screens.SearchScreenViewModel
+import com.supermassivecode.vinylfinder.ui.screens.WantedRecordsViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -33,8 +34,9 @@ class VinylFinderApplication :  Application(), KoinComponent {
         single { provideWantedRecordDao(get()) }
         single { provideFoundRecordDao(get())  }
         single { DiscogsWantedRecordWorker(get(), get(named(ioDispatcher)), get()) }
-        viewModel { SearchScreenViewModel(get(), get()) }
+        viewModel { SearchScreenViewModel(get()) }
         viewModel { RecordDetailViewModel(get(), get()) }
+        viewModel { WantedRecordsViewModel(get()) }
     }
 
     private fun provideDatabase(application: Application): VinylFinderRoomDatabase {

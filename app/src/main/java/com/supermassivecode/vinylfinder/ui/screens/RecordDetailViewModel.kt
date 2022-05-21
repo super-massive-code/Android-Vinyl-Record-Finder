@@ -7,13 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
 import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
-import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
+import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
 import kotlinx.coroutines.launch
 
 sealed interface DetailUiState {
     object Loading : DetailUiState
     data class Error(@StringRes val alertStringId: Int) : DetailUiState
-    data class Success(val data: RecordInfo) : DetailUiState
+    data class Success(val data: RecordInfoDTO) : DetailUiState
 }
 
 
@@ -29,13 +29,13 @@ class RecordDetailViewModel(
         _state.postValue(DetailUiState.Loading)
     }
 
-    fun getReleaseDetail(record: RecordInfo) {
+    fun getReleaseDetail(record: RecordInfoDTO) {
         viewModelScope.launch {
             searchDiscogs(record)
         }
     }
 
-    private suspend fun searchDiscogs(record: RecordInfo) {
+    private suspend fun searchDiscogs(record: RecordInfoDTO) {
         discogsRepository.releaseDetail(record).let {
             if (it.data != null) {
                 _state.postValue(DetailUiState.Success(data = it.data))
@@ -45,10 +45,10 @@ class RecordDetailViewModel(
         }
     }
 
-    fun addRecordToWatchList(recordInfo: RecordInfo) {
+    fun addRecordToWatchList(recordInfoDTO: RecordInfoDTO) {
         viewModelScope.launch {
             val bob =  wantedFoundRecordsRepository.getAllWantedRecords()
-            wantedFoundRecordsRepository.addWantedRecord(recordInfo)
+            wantedFoundRecordsRepository.addWantedRecord(recordInfoDTO)
         }
     }
 

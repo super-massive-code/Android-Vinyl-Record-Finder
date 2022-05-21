@@ -5,21 +5,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.supermassivecode.vinylfinder.data.local.DiscogsWantedRecordWorker
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
-import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
+import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 sealed interface SearchUiState {
-    object Loading :  SearchUiState
+    object Loading : SearchUiState
     data class Error(@StringRes val alertStringId: Int) : SearchUiState
-    data class Success(val data: List<RecordInfo>) : SearchUiState
+    data class Success(val data: List<RecordInfoDTO>) : SearchUiState
 }
 
 class SearchScreenViewModel(
     private val discogsRepository: DiscogsRepository,
-    private val worker: DiscogsWantedRecordWorker,
 ) : ViewModel() {
 
     private var _state = MutableLiveData<SearchUiState>()
@@ -33,12 +31,6 @@ class SearchScreenViewModel(
     fun search(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
             searchDiscogs(query)
-        }
-    }
-
-    fun testDoWork() {
-        viewModelScope.launch {
-            worker.doWork()
         }
     }
 

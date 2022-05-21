@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
+import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
 import com.supermassivecode.vinylfinder.ui.GenericAlertDialog
 import org.koin.androidx.compose.getViewModel
@@ -35,9 +35,6 @@ fun SearchScreen(
     context: Context,
     viewModel: SearchScreenViewModel = getViewModel()
 ) {
-
-    viewModel.testDoWork()
-
     val state by viewModel.state.observeAsState()
 
     Column(
@@ -98,7 +95,7 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
 }
 
 @Composable
-private fun RecordList(records: List<RecordInfo>?, onClick: (record: RecordInfo) -> Unit) {
+private fun RecordList(records: List<RecordInfoDTO>?, onClick: (record: RecordInfoDTO) -> Unit) {
     if (records != null) {
         LazyColumn(
             Modifier.fillMaxSize()
@@ -113,7 +110,7 @@ private fun RecordList(records: List<RecordInfo>?, onClick: (record: RecordInfo)
 }
 
 @Composable
-fun RecordItem(record: RecordInfo, onClick: () -> Unit) {
+fun RecordItem(record: RecordInfoDTO, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(8.dp)

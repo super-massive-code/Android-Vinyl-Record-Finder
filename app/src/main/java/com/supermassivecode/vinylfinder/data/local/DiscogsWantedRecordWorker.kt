@@ -1,7 +1,7 @@
 package com.supermassivecode.vinylfinder.data.local
 
 import com.supermassivecode.vinylfinder.data.CurrencyUtils
-import com.supermassivecode.vinylfinder.data.local.model.FoundRecordInfo
+import com.supermassivecode.vinylfinder.data.local.model.FoundRecordDTO
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -44,9 +44,9 @@ class DiscogsWantedRecordWorker(
         id: Int,
         maxPrice: Float,
         localCurrencySymbol: String
-    ): List<FoundRecordInfo> = withContext(ioDispatcher) {
+    ): List<FoundRecordDTO> = withContext(ioDispatcher) {
 
-        val found = mutableListOf<FoundRecordInfo>()
+        val found = mutableListOf<FoundRecordDTO>()
 
         val url = "https://www.discogs.com/sell/release/$id?sort=price%2Casc&limit=250&page=1"
 
@@ -81,7 +81,7 @@ class DiscogsWantedRecordWorker(
                         .childNodes()[0]
                 )
                 found.add(
-                    FoundRecordInfo(
+                    FoundRecordDTO(
                         url = url,
                         seller = "$sellerName discogs",
                         price = justPrice,

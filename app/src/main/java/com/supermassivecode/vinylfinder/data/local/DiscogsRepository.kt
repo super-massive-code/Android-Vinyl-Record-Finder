@@ -1,8 +1,8 @@
 package com.supermassivecode.vinylfinder.data.local
 
 import com.supermassivecode.vinylfinder.BuildConfig
-import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
-import com.supermassivecode.vinylfinder.data.local.model.RecordTrack
+import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
+import com.supermassivecode.vinylfinder.data.local.model.RecordTrackDTO
 import com.supermassivecode.vinylfinder.data.remote.discogs.DiscogsService
 import com.supermassivecode.vinylfinder.data.remote.Response
 
@@ -15,14 +15,14 @@ class DiscogsRepository {
      * 3. Cache release details also?
      */
 
-    suspend fun search(query: String): Response<List<RecordInfo>?> {
+    suspend fun search(query: String): Response<List<RecordInfoDTO>?> {
         val response = DiscogsService.getService().search(
             token = BuildConfig.DISCOGS_API_TOKEN,
             query = query
         )
         if (response.isSuccessful) {
             return Response(response.body()?.results?.map {
-                RecordInfo(
+                RecordInfoDTO(
                     title = it.title,
                     imageUrl = it.thumb,
                     country = it.country ?: "",
@@ -36,7 +36,7 @@ class DiscogsRepository {
         return Response(errorStringId = Response.parseServerErrorCode(response.code()))
     }
 
-    suspend fun releaseDetail(record: RecordInfo): Response<RecordInfo> {
+    suspend fun releaseDetail(record: RecordInfoDTO): Response<RecordInfoDTO> {
         val response = DiscogsService.getService().releaseDetail(
             token = BuildConfig.DISCOGS_API_TOKEN,
             releaseId = record.discogsRemoteId
@@ -44,7 +44,7 @@ class DiscogsRepository {
         if (response.isSuccessful) {
             response.body()?.let { detail ->
                 return Response(
-                    RecordInfo(
+                    RecordInfoDTO(
                         title = record.title,
                         imageUrl = detail.images.first().resource_url,
                         discogsRemoteId = record.discogsRemoteId,
@@ -53,7 +53,7 @@ class DiscogsRepository {
                         label = record.label,
                         catno = record.catno,
                         tracks = detail.tracklist.map { track ->
-                            RecordTrack(
+                            RecordTrackDTO(
                                 title = track.title,
                                 position = track.position
                             )

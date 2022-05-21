@@ -14,6 +14,7 @@ import com.supermassivecode.vinylfinder.navigation.NAV_ARG_RECORD_INFO_JSON
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
 import com.supermassivecode.vinylfinder.ui.screens.RecordDetailScreen
 import com.supermassivecode.vinylfinder.ui.screens.SearchScreen
+import com.supermassivecode.vinylfinder.ui.screens.WantedRecordsScreen
 
 @Composable
 fun VinylFinderUI(
@@ -25,7 +26,7 @@ fun VinylFinderUI(
     ) {
         NavHost(
             appState.navController,
-            startDestination = NavigationScreen.Search.route
+            startDestination = NavigationScreen.Wanted.route
         ) {
             composable(
                 route = NavigationScreen.Search.route
@@ -44,6 +45,11 @@ fun VinylFinderUI(
                     it.arguments!!.getString(NAV_ARG_RECORD_INFO_JSON)!!,
                     appState.context
                 )
+            }
+            composable(
+                route = NavigationScreen.Wanted.route
+            ) {
+                WantedRecordsScreen(appState.navController, appState.context)
             }
         }
     }

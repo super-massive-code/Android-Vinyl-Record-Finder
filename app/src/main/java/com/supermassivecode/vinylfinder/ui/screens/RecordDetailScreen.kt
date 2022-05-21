@@ -11,15 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.supermassivecode.vinylfinder.data.local.model.RecordInfo
-import com.supermassivecode.vinylfinder.data.local.model.RecordTrack
+import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
+import com.supermassivecode.vinylfinder.data.local.model.RecordTrackDTO
 import com.supermassivecode.vinylfinder.ui.GenericAlertDialog
 import org.koin.androidx.compose.getViewModel
 
@@ -32,7 +31,7 @@ fun RecordDetailScreen(
     val state by viewModel.state.observeAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getReleaseDetail(RecordInfo.fromJson(recordJson)!!)
+        viewModel.getReleaseDetail(RecordInfoDTO.fromJson(recordJson)!!)
     }
     Box(
         Modifier.fillMaxSize()
@@ -55,9 +54,9 @@ fun RecordDetailScreen(
 }
 
 @Composable
-private fun Header(recordInfo: RecordInfo, onClick: () -> Unit) {
+private fun Header(recordInfoDTO: RecordInfoDTO, onClick: () -> Unit) {
     Box {
-        RecordItem(record = recordInfo) {}
+        RecordItem(record = recordInfoDTO) {}
         IconButton(
             onClick = onClick,
             modifier = Modifier
@@ -76,7 +75,7 @@ private fun Header(recordInfo: RecordInfo, onClick: () -> Unit) {
 }
 
 @Composable
-private fun Tracks(tracks: List<RecordTrack>) {
+private fun Tracks(tracks: List<RecordTrackDTO>) {
     LazyColumn {
         items(tracks) { track ->
             Card(
