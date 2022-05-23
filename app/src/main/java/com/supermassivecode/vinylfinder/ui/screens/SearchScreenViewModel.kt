@@ -25,7 +25,6 @@ class SearchScreenViewModel(
 
     init {
         _state.postValue(SearchUiState.Success(emptyList()))
-        search("Bob")
     }
 
     fun search(query: String) {
