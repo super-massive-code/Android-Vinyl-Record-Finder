@@ -15,14 +15,14 @@ class DiscogsWantedRecordWorker(
     private val wantedFoundRecordsRepository: WantedFoundRecordsRepository,
     private val ioDispatcher: CoroutineDispatcher,
     private val currencyUtils: CurrencyUtils,
-) : WantedRecordWorker {
+) {
 
     /**
      * Search Discogs MarketPlace
      * trigger send of local message or email (should this just watch repository for results?)
      */
 
-    override suspend fun doWork() {
+    suspend fun doWork() {
         //TODO add delay so not hammering website or do this externally from call site?
         //TODO get max price from UI / DB
         //TODO how to detect previously scraped records? seller name

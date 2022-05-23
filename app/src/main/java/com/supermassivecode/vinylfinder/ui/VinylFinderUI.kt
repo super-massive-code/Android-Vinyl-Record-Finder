@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.supermassivecode.vinylfinder.navigation.NAV_ARG_RECORD_INFO_JSON
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
+import com.supermassivecode.vinylfinder.ui.screens.DeveloperOptionsScreen
 import com.supermassivecode.vinylfinder.ui.screens.RecordDetailScreen
 import com.supermassivecode.vinylfinder.ui.screens.SearchScreen
 import com.supermassivecode.vinylfinder.ui.screens.WantedRecordsScreen
@@ -41,7 +43,7 @@ fun VinylFinderUI(
 private fun ScreenController(appState: VinylFinderAppState) {
     NavHost(
         appState.navController,
-        startDestination = NavigationScreen.Search.route
+        startDestination = NavigationScreen.Wanted.route
     ) {
         composable(
             route = NavigationScreen.Search.route
@@ -66,6 +68,11 @@ private fun ScreenController(appState: VinylFinderAppState) {
         ) {
             WantedRecordsScreen(appState.navController, appState.context)
         }
+        composable(
+            route = NavigationScreen.DeveloperOptions.route
+        ) {
+            DeveloperOptionsScreen()
+        }
     }
 }
 
@@ -89,9 +96,12 @@ private fun BottomBar(navHostController: NavHostController) {
         BottomNavigationItem(
             icon = { Icon(Icons.Default.List, "Wants List Icon") },
             selected = currentRoute == NavigationScreen.Wanted.route,
-            onClick = {
-                navHostController.navigate(NavigationScreen.Wanted.route)
-            }
+            onClick = { navHostController.navigate(NavigationScreen.Wanted.route) }
+        )
+        BottomNavigationItem(
+            icon = { Icon(Icons.Default.AccountBox, "Dev options Icon") },
+            selected = currentRoute == NavigationScreen.DeveloperOptions.route,
+            onClick = { navHostController.navigate(NavigationScreen.DeveloperOptions.route) }
         )
     }
 }
