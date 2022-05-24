@@ -17,7 +17,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -71,6 +73,7 @@ fun SearchScreen(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchBar(onSearch: (term: String) -> Unit) {
     Column(
@@ -79,15 +82,18 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
             .fillMaxWidth()
     ) {
         val textState = remember { mutableStateOf("") }
+        val keyboardController = LocalSoftwareKeyboardController.current
         TextField(
             value = textState.value,
             onValueChange = { textState.value = it },
             singleLine = true,
             label = { Text(text = "Search") },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = {
-                onSearch(textState.value)
-            }),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    keyboardController?.hide()
+                    onSearch(textState.value)
+                }),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
             },
@@ -97,18 +103,18 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
 
 @Composable
 private fun RecordList(records: List<RecordInfoDTO>, onClick: (record: RecordInfoDTO) -> Unit) {
-        LazyColumn(
-            Modifier
-                .fillMaxSize()
-                .padding(standardPadding),
-            verticalArrangement = Arrangement.spacedBy(standardPadding)
-        ) {
-            items(items = records) { record ->
-                RecordItem(record = record, onClick = {
-                    onClick(record)
-                })
-            }
+    LazyColumn(
+        Modifier
+            .fillMaxSize()
+            .padding(standardPadding),
+        verticalArrangement = Arrangement.spacedBy(standardPadding)
+    ) {
+        items(items = records) { record ->
+            RecordItem(record = record, onClick = {
+                onClick(record)
+            })
         }
+    }
 }
 
 @Composable
