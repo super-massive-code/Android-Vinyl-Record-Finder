@@ -1,9 +1,12 @@
 package com.supermassivecode.vinylfinder.data.local.model
 
+import androidx.annotation.DrawableRes
+import com.supermassivecode.vinylfinder.R
+
 enum class Shop(
     val shopName: String,
-    val imageId: Int
+    @DrawableRes val imageId: Int
 ) {
-    DISCOGS("Discogs", 1),
-    EBAY("eBay", 1)
+    DISCOGS("Discogs", R.drawable.discogs_icon),
+    EBAY("eBay", R.drawable.ebay_icon)
 }
