@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
 import com.supermassivecode.vinylfinder.data.local.model.RecordTrackDTO
 import com.supermassivecode.vinylfinder.ui.GenericAlertDialog
+import com.supermassivecode.vinylfinder.ui.theme.standardPadding
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -55,18 +56,25 @@ fun RecordDetailScreen(
 
 @Composable
 private fun Header(recordInfoDTO: RecordInfoDTO, onClick: () -> Unit) {
-    Box {
+    Box(
+        modifier = Modifier
+            .padding(
+                start = standardPadding,
+                end = standardPadding
+            )
+    ) {
         RecordItem(record = recordInfoDTO) {}
         IconButton(
             onClick = onClick,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .size(50.dp)
+                .padding(end = standardPadding, bottom = standardPadding)
         ) {
             Icon(
                 Icons.Filled.AddCircle,
                 contentDescription = "add record",
-                tint = Color.Black,
+                tint = Color.White,
                 modifier = Modifier
                     .size(50.dp)
             )
@@ -76,26 +84,35 @@ private fun Header(recordInfoDTO: RecordInfoDTO, onClick: () -> Unit) {
 
 @Composable
 private fun Tracks(tracks: List<RecordTrackDTO>) {
-    LazyColumn {
+    LazyColumn(
+        Modifier
+            .fillMaxSize()
+            .padding(standardPadding),
+        verticalArrangement = Arrangement.spacedBy(standardPadding)
+    ) {
         items(tracks) { track ->
-            Card(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = track.position + ":",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(text = track.title)
-                }
-            }
+            TrackItem(track)
+        }
+    }
+}
+
+@Composable
+private fun TrackItem(track: RecordTrackDTO) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(standardPadding),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = track.position + ":",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(text = track.title)
         }
     }
 }

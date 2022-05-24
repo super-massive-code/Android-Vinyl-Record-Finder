@@ -2,6 +2,7 @@ package com.supermassivecode.vinylfinder.ui
 
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -26,6 +28,7 @@ import com.supermassivecode.vinylfinder.ui.screens.search.RecordDetailScreen
 import com.supermassivecode.vinylfinder.ui.screens.search.SearchScreen
 import com.supermassivecode.vinylfinder.ui.screens.wanted.FoundSellersScreen
 import com.supermassivecode.vinylfinder.ui.screens.wanted.WantedRecordsScreen
+import okhttp3.internal.wait
 
 @Composable
 fun VinylFinderUI(
@@ -33,24 +36,29 @@ fun VinylFinderUI(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.background
+        color = MaterialTheme.colors.primary
     ) {
+
+        var setText = { "BOB" }
+
         Scaffold(
-            bottomBar = { BottomBar(navHostController = appState.navController) },
-            content = { ScreenController(appState = appState) }
+            topBar = { TopBar(setText) },
+            content = { ScreenController(appState = appState, setText) },
+            bottomBar = { BottomBar(navHostController = appState.navController) }
         )
     }
 }
 
 @Composable
-private fun ScreenController(appState: VinylFinderAppState) {
+private fun ScreenController(appState: VinylFinderAppState, setAppBarTitle: () -> String) {
     NavHost(
         appState.navController,
-        startDestination = NavigationScreen.Wanted.route
+        startDestination = NavigationScreen.Search.route
     ) {
         composable(
             route = NavigationScreen.Search.route
         ) {
+            setAppBarTitle.invoke().run { "Search" }
             SearchScreen(appState.navController, appState.context)
         }
         composable(
@@ -87,6 +95,20 @@ private fun ScreenController(appState: VinylFinderAppState) {
                 it.arguments!!.getString(NAV_ARG_RECORD_UID)!!
             )
         }
+    }
+}
+
+@Composable
+private fun TopBar(setText: () -> String) {
+    TopAppBar(
+        backgroundColor = MaterialTheme.colors.background,
+        contentColor = Color.White,
+        elevation = 10.dp
+    ) {
+        Text(
+            modifier = Modifier.padding(10.dp),
+            text = setText()
+        )
     }
 }
 

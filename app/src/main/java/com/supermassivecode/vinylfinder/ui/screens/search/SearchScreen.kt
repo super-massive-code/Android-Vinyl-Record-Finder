@@ -27,6 +27,7 @@ import coil.compose.AsyncImage
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
 import com.supermassivecode.vinylfinder.ui.GenericAlertDialog
+import com.supermassivecode.vinylfinder.ui.theme.standardPadding
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -74,8 +75,8 @@ fun SearchScreen(
 private fun SearchBar(onSearch: (term: String) -> Unit) {
     Column(
         Modifier
-            .padding(16.dp)
-            .width(IntrinsicSize.Max)
+            .padding(12.dp)
+            .fillMaxWidth()
     ) {
         val textState = remember { mutableStateOf("") }
         TextField(
@@ -97,8 +98,10 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
 @Composable
 private fun RecordList(records: List<RecordInfoDTO>, onClick: (record: RecordInfoDTO) -> Unit) {
         LazyColumn(
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(1.dp)
+            Modifier
+                .fillMaxSize()
+                .padding(standardPadding),
+            verticalArrangement = Arrangement.spacedBy(standardPadding)
         ) {
             items(items = records) { record ->
                 RecordItem(record = record, onClick = {
@@ -112,7 +115,6 @@ private fun RecordList(records: List<RecordInfoDTO>, onClick: (record: RecordInf
 fun RecordItem(record: RecordInfoDTO, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .padding(8.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
@@ -123,7 +125,7 @@ fun RecordItem(record: RecordInfoDTO, onClick: () -> Unit) {
         ) {
             Column(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .padding(standardPadding)
             ) {
                 AsyncImage(
                     modifier = Modifier.size(150.dp),
@@ -135,7 +137,7 @@ fun RecordItem(record: RecordInfoDTO, onClick: () -> Unit) {
                 )
             }
             Column(
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(standardPadding)
             ) {
                 Text(record.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text(record.year)

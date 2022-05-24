@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
+import com.supermassivecode.vinylfinder.ui.theme.standardPadding
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -43,7 +43,10 @@ fun WantedRecordsScreen(
 @Composable
 private fun RecordList(records: List<WantedRecordDTO>, showResults: (uid: String) -> Unit) {
     LazyColumn(
-        Modifier.fillMaxSize()
+        Modifier
+            .fillMaxSize()
+            .padding(standardPadding),
+        verticalArrangement = Arrangement.spacedBy(standardPadding)
     ) {
         items(items = records) { dto ->
             RecordItem(dto) {
@@ -61,12 +64,10 @@ private fun RecordItem(dto: WantedRecordDTO, showFound: (uid: String) -> Unit) {
     Card(
         Modifier
             .fillMaxWidth()
-            .background(Color.LightGray),
     ) {
         Box(
             Modifier
-                .background(Color.LightGray)
-                .padding(8.dp)
+                .padding(standardPadding)
                 .clickable(enabled = foundCount > 0, onClick = { showFound(dto.databaseUid) })
         ) {
             Column()
