@@ -2,6 +2,7 @@ package com.supermassivecode.vinylfinder.data.local
 
 import com.supermassivecode.vinylfinder.data.local.model.FoundRecordDTO
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
+import com.supermassivecode.vinylfinder.data.local.model.Shop
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import com.supermassivecode.vinylfinder.data.local.room.FoundRecord
 import com.supermassivecode.vinylfinder.data.local.room.FoundRecordDao
@@ -47,29 +48,28 @@ class WantedFoundRecordsRepository(
     }
 
     suspend fun addFoundRecordIfNotExists(parentId: String, found: FoundRecordDTO) {
-        if (!foundRecordDao.exists(found.url, found.seller, found.price)) {
+        if (!foundRecordDao.exists(found.url, found.notes, found.price)) {
             foundRecordDao.insert(
                 FoundRecord(
                     wantedRecordId = parentId,
                     url = found.url,
                     notes = found.notes,
                     price = found.price,
-                    seller = found.seller,
-                    currency = found.currency
+                    currency = found.currency,
+                    seller = found.shop.shopName
                 )
             )
         }
     }
 
     suspend fun getFoundRecordsForParent(parentWantedRecordId: String): List<FoundRecordDTO> {
-        //TODO: Add image from seller type enum (associate image with name and use in workers)
         return foundRecordDao.getAllForWantedRecord(parentWantedRecordId).map {
             FoundRecordDTO(
                 url = it.url,
                 price = it.price,
                 notes = it.notes,
-                seller = it.seller,
-                currency = it.currency
+                currency = it.currency,
+                shop = Shop.DISCOGS
             )
         }
     }

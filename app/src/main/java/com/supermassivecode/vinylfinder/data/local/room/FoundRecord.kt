@@ -1,6 +1,7 @@
 package com.supermassivecode.vinylfinder.data.local.room
 
 import androidx.room.*
+import com.supermassivecode.vinylfinder.data.local.model.Shop
 import java.util.*
 
 @Entity
@@ -15,6 +16,27 @@ data class FoundRecord(
     @ColumnInfo(name = "notes") val notes: String
 )
 
+class ShopConvertor {
+    @TypeConverter
+    fun fromSeller(name: String): Shop {
+        return when (name) {
+            Shop.DISCOGS.shopName -> Shop.DISCOGS
+            Shop.EBAY.shopName -> Shop.EBAY
+            else -> {
+                throw IllegalStateException()
+            }
+        }
+    }
+
+    @TypeConverter
+    fun toSeller(shop: Shop): String {
+        return when (shop) {
+            Shop.DISCOGS -> Shop.DISCOGS.shopName
+            Shop.EBAY -> Shop.EBAY.shopName
+        }
+    }
+}
+
 @Dao
 interface FoundRecordDao {
 
@@ -23,9 +45,9 @@ interface FoundRecordDao {
 
     @Query("SELECT EXISTS(SELECT * FROM FoundRecord WHERE" +
             " url = :url AND" +
-            " seller = :seller AND " +
+            " notes = :notes AND " +
             " price = :price)")
-    suspend fun exists(url: String, seller: String, price: Float): Boolean
+    suspend fun exists(url: String, notes: String, price: Float): Boolean
 
     @Insert
     suspend fun insert(record: FoundRecord)

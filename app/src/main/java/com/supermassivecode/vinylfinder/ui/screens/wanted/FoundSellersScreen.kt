@@ -60,8 +60,8 @@ fun SellerItem(record: FoundRecordDTO, loadUrl: (url: String) -> Unit) {
             .padding(8.dp)
             .clickable(onClick = { loadUrl(record.url) })
     ) {
-        Text(record.seller, fontWeight = FontWeight.Bold)
         Text("${record.currency}${record.price}", fontWeight = FontWeight.Bold)
+        Text(record.shop.shopName, fontWeight = FontWeight.Medium)
         Text(record.notes)
     }
 }

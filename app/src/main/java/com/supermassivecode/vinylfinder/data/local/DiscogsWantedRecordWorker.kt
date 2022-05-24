@@ -2,6 +2,7 @@ package com.supermassivecode.vinylfinder.data.local
 
 import com.supermassivecode.vinylfinder.data.CurrencyUtils
 import com.supermassivecode.vinylfinder.data.local.model.FoundRecordDTO
+import com.supermassivecode.vinylfinder.data.local.model.Shop
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -81,8 +82,9 @@ class DiscogsWantedRecordWorker(
                 )
                 found.add(
                     FoundRecordDTO(
+                        shop = Shop.DISCOGS,
                         url = url,
-                        seller = "$sellerName discogs",
+                        notes = "Seller name: $sellerName",
                         price = justPrice,
                         currency = localCurrencySymbol
                     )
