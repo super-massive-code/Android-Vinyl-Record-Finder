@@ -1,4 +1,4 @@
-package com.supermassivecode.vinylfinder.ui.screens
+package com.supermassivecode.vinylfinder.ui.screens.search
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData

@@ -1,4 +1,4 @@
-package com.supermassivecode.vinylfinder.ui.screens
+package com.supermassivecode.vinylfinder.ui.screens.developeroptions
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

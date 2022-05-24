@@ -1,4 +1,4 @@
-package com.supermassivecode.vinylfinder.ui.screens
+package com.supermassivecode.vinylfinder.ui.screens.search
 
 import android.content.Context
 import android.net.Uri

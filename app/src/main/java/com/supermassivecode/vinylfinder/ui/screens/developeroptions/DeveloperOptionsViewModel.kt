@@ -1,4 +1,4 @@
-package com.supermassivecode.vinylfinder.ui.screens
+package com.supermassivecode.vinylfinder.ui.screens.developeroptions
 
 import android.content.Context
 import androidx.lifecycle.ViewModel

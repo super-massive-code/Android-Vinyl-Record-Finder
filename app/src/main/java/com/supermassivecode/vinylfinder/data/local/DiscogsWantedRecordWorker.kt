@@ -25,7 +25,6 @@ class DiscogsWantedRecordWorker(
     suspend fun doWork() {
         //TODO add delay so not hammering website or do this externally from call site?
         //TODO get max price from UI / DB
-        //TODO how to detect previously scraped records? seller name
         wantedFoundRecordsRepository.getAllWantedRecords().map { wantedRecord ->
             scrapeRelease(
                 id = wantedRecord.discogsRemoteId,

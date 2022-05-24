@@ -10,10 +10,11 @@ import com.supermassivecode.vinylfinder.data.local.WantedRecordsWorkManager
 import com.supermassivecode.vinylfinder.data.local.room.FoundRecordDao
 import com.supermassivecode.vinylfinder.data.local.room.VinylFinderRoomDatabase
 import com.supermassivecode.vinylfinder.data.local.room.WantedRecordDao
-import com.supermassivecode.vinylfinder.ui.screens.DeveloperOptionsViewModel
-import com.supermassivecode.vinylfinder.ui.screens.RecordDetailViewModel
-import com.supermassivecode.vinylfinder.ui.screens.SearchScreenViewModel
-import com.supermassivecode.vinylfinder.ui.screens.WantedRecordsViewModel
+import com.supermassivecode.vinylfinder.ui.screens.developeroptions.DeveloperOptionsViewModel
+import com.supermassivecode.vinylfinder.ui.screens.search.RecordDetailViewModel
+import com.supermassivecode.vinylfinder.ui.screens.search.SearchScreenViewModel
+import com.supermassivecode.vinylfinder.ui.screens.wanted.FoundSellersViewModel
+import com.supermassivecode.vinylfinder.ui.screens.wanted.WantedRecordsViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -41,6 +42,7 @@ class VinylFinderApplication : Application(), KoinComponent {
         viewModel { RecordDetailViewModel(get(), get()) }
         viewModel { WantedRecordsViewModel(get()) }
         viewModel { DeveloperOptionsViewModel(get()) }
+        viewModel { FoundSellersViewModel(get())}
         worker { WantedRecordsWorkManager(get(), get()) }
     }
 

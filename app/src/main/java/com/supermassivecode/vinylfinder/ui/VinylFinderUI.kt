@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -18,11 +19,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.supermassivecode.vinylfinder.navigation.NAV_ARG_RECORD_INFO_JSON
+import com.supermassivecode.vinylfinder.navigation.NAV_ARG_RECORD_UID
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
-import com.supermassivecode.vinylfinder.ui.screens.DeveloperOptionsScreen
-import com.supermassivecode.vinylfinder.ui.screens.RecordDetailScreen
-import com.supermassivecode.vinylfinder.ui.screens.SearchScreen
-import com.supermassivecode.vinylfinder.ui.screens.WantedRecordsScreen
+import com.supermassivecode.vinylfinder.ui.screens.developeroptions.DeveloperOptionsScreen
+import com.supermassivecode.vinylfinder.ui.screens.search.RecordDetailScreen
+import com.supermassivecode.vinylfinder.ui.screens.search.SearchScreen
+import com.supermassivecode.vinylfinder.ui.screens.wanted.FoundSellersScreen
+import com.supermassivecode.vinylfinder.ui.screens.wanted.WantedRecordsScreen
 
 @Composable
 fun VinylFinderUI(
@@ -66,12 +69,23 @@ private fun ScreenController(appState: VinylFinderAppState) {
         composable(
             route = NavigationScreen.Wanted.route
         ) {
-            WantedRecordsScreen(appState.navController, appState.context)
+            WantedRecordsScreen(appState.navController)
         }
         composable(
             route = NavigationScreen.DeveloperOptions.route
         ) {
             DeveloperOptionsScreen()
+        }
+        composable(
+            route = NavigationScreen.Found.route,
+            arguments = listOf(navArgument(NAV_ARG_RECORD_UID) {
+                type = NavType.StringType
+                nullable = false
+            })
+        ) {
+            FoundSellersScreen(
+                it.arguments!!.getString(NAV_ARG_RECORD_UID)!!
+            )
         }
     }
 }

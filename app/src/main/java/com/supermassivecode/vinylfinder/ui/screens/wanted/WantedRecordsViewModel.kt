@@ -1,4 +1,4 @@
-package com.supermassivecode.vinylfinder.ui.screens
+package com.supermassivecode.vinylfinder.ui.screens.wanted
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -7,12 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
+import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 sealed interface WantedRecordsUiState {
     data class Error(@StringRes val alertStringId: Int) : WantedRecordsUiState
-    data class Success(val data: List<Map<RecordInfoDTO, Int>>) : WantedRecordsUiState
+    data class Success(val data: List<WantedRecordDTO>) : WantedRecordsUiState
 }
 
 class WantedRecordsViewModel(
