@@ -49,7 +49,8 @@ fun FoundSellersScreen(
 @Composable
 fun SellersList(sellers: List<FoundRecordDTO>, loadUrl: (url: String) -> Unit) {
     LazyColumn(
-        Modifier.fillMaxSize()
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(1.dp)
     ) {
         items(items = sellers) { record: FoundRecordDTO ->
             SellerItem(record = record, loadUrl)
@@ -66,18 +67,22 @@ fun SellerItem(record: FoundRecordDTO, loadUrl: (url: String) -> Unit) {
             .background(Color.LightGray),
     ) {
         Row(
+            Modifier.padding(
+              start = 8.dp
+            ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
                 modifier = Modifier
-                    .size(50.dp)
-                    .padding(10.dp)
+                    .size(25.dp)
                     .clip(CircleShape),
                 model = record.shop.imageId,
                 contentDescription = "shop logo"
             )
 
-            Column {
+            Column(
+                Modifier.padding(8.dp),
+            ) {
                 Text("${record.currency}${record.price}", fontWeight = FontWeight.Bold)
                 Text(record.shop.shopName, fontWeight = FontWeight.Medium)
                 Text(record.notes)

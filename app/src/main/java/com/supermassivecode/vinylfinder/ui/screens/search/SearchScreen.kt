@@ -98,7 +98,8 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
 private fun RecordList(records: List<RecordInfoDTO>?, onClick: (record: RecordInfoDTO) -> Unit) {
     if (records != null) {
         LazyColumn(
-            Modifier.fillMaxSize()
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             items(items = records) { record ->
                 RecordItem(record = record, onClick = {
