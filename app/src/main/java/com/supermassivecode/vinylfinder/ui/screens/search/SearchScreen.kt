@@ -95,8 +95,7 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
 }
 
 @Composable
-private fun RecordList(records: List<RecordInfoDTO>?, onClick: (record: RecordInfoDTO) -> Unit) {
-    if (records != null) {
+private fun RecordList(records: List<RecordInfoDTO>, onClick: (record: RecordInfoDTO) -> Unit) {
         LazyColumn(
             Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(1.dp)
@@ -107,7 +106,6 @@ private fun RecordList(records: List<RecordInfoDTO>?, onClick: (record: RecordIn
                 })
             }
         }
-    }
 }
 
 @Composable
