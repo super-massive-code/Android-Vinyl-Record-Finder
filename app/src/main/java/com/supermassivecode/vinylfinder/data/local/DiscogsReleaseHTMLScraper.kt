@@ -13,7 +13,7 @@ class DiscogsReleaseHTMLScraper(
 ) {
 
     fun scrapeRelease(
-        maxPrice: Float,
+        maxPriceIncludingShipping: Float,
         localCurrencySymbol: String,
         htmlDocument: Document,
         originUrl: String,
@@ -35,16 +35,16 @@ class DiscogsReleaseHTMLScraper(
 
         for (row in available) {
             val priceSection: Element = row.getElementsByClass("item_price")[0]
-            var localPrice: Element = priceSection.getElementsByClass("price")[0]
-            var priceString: String
-            if (localPrice.getElementsContainingText(localCurrencySymbol).size == 0) {
-                localPrice = priceSection.getElementsByClass("converted_price")[0]
-                priceString = (localPrice.childNodes()[1] as TextNode).wholeText
+            val totalPriceSection: Element = priceSection.getElementsByClass("converted_price")[0]
+            val priceString = if (totalPriceSection.childNodes().size == 3) {
+                // e.g. 'about $20.00 total'
+                (totalPriceSection.childNodes()[1] as TextNode).wholeText
             } else {
-                priceString = (localPrice.childNodes()[0] as TextNode).wholeText
+                // e.g. '$20.00 total'
+                (totalPriceSection.childNodes()[0] as TextNode).wholeText
             }
             val justPrice = currencyUtils.convertFromString(priceString)
-            if (justPrice <= maxPrice) {
+            if (justPrice <= maxPriceIncludingShipping) {
                 val sellerBlock: Element = row.getElementsByClass("seller_block")[0]
                 val sellerName: String = java.lang.String.valueOf(
                     sellerBlock.allElements[2].allElements[0].childNodes()[0]

@@ -25,7 +25,7 @@ class DiscogsWantedRecordWorker(
             val doc: Document = Jsoup.connect(url).get()
 
             scraper.scrapeRelease(
-                maxPrice = 100F,
+                maxPriceIncludingShipping = 100F,
                 localCurrencySymbol = currencyUtils.localSymbol(),
                 htmlDocument = doc,
                 originUrl = url

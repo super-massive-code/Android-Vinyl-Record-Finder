@@ -11,31 +11,56 @@ class DiscogsReleaseHTMLScraperTest {
 
     private val basePath = "../app/src/test/resources/html/discogs/"
 
+    private val bobDylanHTML = "discogs-1596438-Bob-Dylan-The-Freewheelin-Bob-Dylan.html"
+    private val carlCarltonHTML = "discogs-942201-Carl-Carlton-Carl-Carlton.html"
+
     private fun loadFile(fileName: String) = TestResourceLoader.loadTextFile(basePath + fileName)
 
     @Test
-    fun whenMaxPriceIs100AndCurrencyDollarShouldThen6ResultsShouldBeFound() {
-        val html = loadFile("discogs-1596438-Bob-Dylan-The-Freewheelin-Bob-Dylan.html")
+    fun withBobDylanHTMLWhenMaxPriceIs42Then2ResultsShouldBeFound() {
         val result = DiscogsReleaseHTMLScraper(CurrencyUtils()).scrapeRelease(
-            maxPrice = 100.00f,
-            localCurrencySymbol = "$",
-            htmlDocument = Jsoup.parse(html),
+            maxPriceIncludingShipping = 42.00f,
+            localCurrencySymbol = "",
+            htmlDocument = Jsoup.parse(loadFile(bobDylanHTML)),
             originUrl = ""
         )
 
-        assertEquals(6, result.size)
+        assertEquals(2, result.size)
     }
 
     @Test
-    fun whenMaxPriceIs100AndCurrencyGBPShouldThen6ResultsShouldBeFound() {
-        val html = loadFile("discogs-1596438-Bob-Dylan-The-Freewheelin-Bob-Dylan.html")
+    fun withBobDylanHTMLWhenMaxPriceIs50Then4ResultsShouldBeFound() {
         val result = DiscogsReleaseHTMLScraper(CurrencyUtils()).scrapeRelease(
-            maxPrice = 100f,
-            localCurrencySymbol = "£",
-            htmlDocument = Jsoup.parse(html),
+            maxPriceIncludingShipping = 50.00f,
+            localCurrencySymbol = "",
+            htmlDocument = Jsoup.parse(loadFile(bobDylanHTML)),
             originUrl = ""
         )
 
-        assertEquals(6, result.size)
+        assertEquals(4, result.size)
+    }
+
+    @Test
+    fun withCarlCarltonWhenMaxPriceIs10Then0ShouldBeFound() {
+        val result = DiscogsReleaseHTMLScraper(CurrencyUtils()).scrapeRelease(
+            maxPriceIncludingShipping = 10.00f,
+            localCurrencySymbol = "",
+            htmlDocument = Jsoup.parse(loadFile(carlCarltonHTML)),
+            originUrl = ""
+        )
+
+        assertEquals(0, result.size)
+    }
+
+    @Test
+    fun withCarlCarltonWhenMaxPriceIs30Then20ShouldBeFound() {
+        val result = DiscogsReleaseHTMLScraper(CurrencyUtils()).scrapeRelease(
+            maxPriceIncludingShipping = 30.00f,
+            localCurrencySymbol = "",
+            htmlDocument = Jsoup.parse(loadFile(carlCarltonHTML)),
+            originUrl = ""
+        )
+
+        assertEquals(20, result.size)
     }
 }
