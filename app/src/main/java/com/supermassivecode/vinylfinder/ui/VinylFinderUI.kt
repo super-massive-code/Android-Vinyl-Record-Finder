@@ -1,6 +1,5 @@
 package com.supermassivecode.vinylfinder.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,12 +8,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,7 +28,6 @@ import com.supermassivecode.vinylfinder.ui.screens.search.RecordDetailScreen
 import com.supermassivecode.vinylfinder.ui.screens.search.SearchScreen
 import com.supermassivecode.vinylfinder.ui.screens.wanted.FoundSellersScreen
 import com.supermassivecode.vinylfinder.ui.screens.wanted.WantedRecordsScreen
-import okhttp3.internal.wait
 
 @Composable
 fun VinylFinderUI(
@@ -39,14 +37,15 @@ fun VinylFinderUI(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.primary
     ) {
-
-        var setText = { "BOB" }
+        var topBarTitle by remember { mutableStateOf("") }
 
         Scaffold(
-            topBar = { TopBar(setText) },
+            topBar = { TopBar(topBarTitle) },
             content = { padding ->
                 Box(modifier = Modifier.padding(bottom = padding.calculateBottomPadding())) {
-                    ScreenController(appState = appState, setText)
+                    ScreenController(appState = appState) { titleText ->
+                        topBarTitle = titleText
+                    }
                 }
             },
             bottomBar = { BottomBar(navHostController = appState.navController) }
@@ -55,7 +54,7 @@ fun VinylFinderUI(
 }
 
 @Composable
-private fun ScreenController(appState: VinylFinderAppState, setAppBarTitle: () -> String) {
+private fun ScreenController(appState: VinylFinderAppState, setTopBarText: (String) -> Unit) {
     NavHost(
         appState.navController,
         startDestination = NavigationScreen.Search.route
@@ -63,7 +62,7 @@ private fun ScreenController(appState: VinylFinderAppState, setAppBarTitle: () -
         composable(
             route = NavigationScreen.Search.route
         ) {
-            setAppBarTitle.invoke().run { "Search" }
+            setTopBarText("Record Search")
             SearchScreen(appState.navController, appState.context)
         }
         composable(
@@ -73,7 +72,7 @@ private fun ScreenController(appState: VinylFinderAppState, setAppBarTitle: () -
                 nullable = false
             })
         ) {
-            Log.e("SMC", "BackStackTriggered")
+            setTopBarText("Record Detail")
             RecordDetailScreen(
                 it.arguments!!.getString(NAV_ARG_RECORD_INFO_JSON)!!,
                 appState.context
@@ -82,11 +81,13 @@ private fun ScreenController(appState: VinylFinderAppState, setAppBarTitle: () -
         composable(
             route = NavigationScreen.Wanted.route
         ) {
+            setTopBarText("Wants List")
             WantedRecordsScreen(appState.navController)
         }
         composable(
             route = NavigationScreen.DeveloperOptions.route
         ) {
+            setTopBarText("Developer Options")
             DeveloperOptionsScreen()
         }
         composable(
@@ -96,6 +97,7 @@ private fun ScreenController(appState: VinylFinderAppState, setAppBarTitle: () -
                 nullable = false
             })
         ) {
+            setTopBarText("Found Records")
             FoundSellersScreen(
                 it.arguments!!.getString(NAV_ARG_RECORD_UID)!!
             )
@@ -104,7 +106,7 @@ private fun ScreenController(appState: VinylFinderAppState, setAppBarTitle: () -
 }
 
 @Composable
-private fun TopBar(setText: () -> String) {
+private fun TopBar(topBarText: String) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.background,
         contentColor = Color.White,
@@ -112,7 +114,9 @@ private fun TopBar(setText: () -> String) {
     ) {
         Text(
             modifier = Modifier.padding(10.dp),
-            text = setText()
+            text = topBarText,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -125,6 +129,11 @@ private fun BottomBar(navHostController: NavHostController) {
         elevation = 12.dp
     ) {
         BottomNavigationItem(
+            icon = { Icon(Icons.Default.List, "Wants List Icon") },
+            selected = currentRoute == NavigationScreen.Wanted.route,
+            onClick = { navHostController.navigate(NavigationScreen.Wanted.route) }
+        )
+        BottomNavigationItem(
             icon = { Icon(Icons.Default.Search, "Search Icon") },
             selected = currentRoute == NavigationScreen.Search.route,
             onClick = {
@@ -133,11 +142,6 @@ private fun BottomBar(navHostController: NavHostController) {
                     //TODO need to save state, where?
                 }
             }
-        )
-        BottomNavigationItem(
-            icon = { Icon(Icons.Default.List, "Wants List Icon") },
-            selected = currentRoute == NavigationScreen.Wanted.route,
-            onClick = { navHostController.navigate(NavigationScreen.Wanted.route) }
         )
         BottomNavigationItem(
             icon = { Icon(Icons.Default.AccountBox, "Dev options Icon") },
