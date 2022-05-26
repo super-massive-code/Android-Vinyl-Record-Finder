@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -87,7 +88,13 @@ private fun SearchBar(onSearch: (term: String) -> Unit) {
             value = textState.value,
             onValueChange = { textState.value = it },
             singleLine = true,
-            label = { Text(text = "Search") },
+            label = {
+                Text(
+                    text = "Artist / Title",
+                    fontWeight = FontWeight.Light,
+                    fontStyle = FontStyle.Italic
+                )
+            },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(
                 onSearch = {
