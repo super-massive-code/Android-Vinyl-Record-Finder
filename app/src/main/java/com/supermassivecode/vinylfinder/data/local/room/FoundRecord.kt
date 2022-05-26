@@ -40,7 +40,7 @@ class ShopConvertor {
 @Dao
 interface FoundRecordDao {
 
-    @Query("SELECT * FROM FoundRecord WHERE wanted_record_id LIKE :parentId")
+    @Query("SELECT * FROM FoundRecord WHERE wanted_record_id LIKE :parentId ORDER BY price ASC")
     suspend fun getAllForWantedRecord(parentId: String): List<FoundRecord>
 
     @Query("SELECT EXISTS(SELECT * FROM FoundRecord WHERE" +
