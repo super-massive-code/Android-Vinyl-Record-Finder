@@ -8,7 +8,6 @@ data class ReleaseResponse(
     val id: Int,
     val images: List<Image>,
     val tracklist: List<Track>,
-    val videos: List<Video>
 )
 
 @JsonClass(generateAdapter = true)
@@ -24,14 +23,6 @@ data class Track(
     val position: String,
     val title: String,
     val artists: List<Artist>?
-)
-
-@JsonClass(generateAdapter = true)
-data class Video(
-    val description: String,
-    val title: String,
-    val duration: Int,
-    val uri: String
 )
 
 @JsonClass(generateAdapter = true)
