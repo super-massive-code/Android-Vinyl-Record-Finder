@@ -13,6 +13,11 @@ class WantedFoundRecordsRepository(
     private val wantedRecordDao: WantedRecordDao,
     private val foundRecordDao: FoundRecordDao
 ) {
+
+    suspend fun wantedRecordExistsInDatabase(record: RecordInfoDTO): Boolean {
+        return wantedRecordDao.exists(record.discogsRemoteId)
+    }
+
     suspend fun addWantedRecord(recordInfoDTO: RecordInfoDTO) {
         wantedRecordDao.insert(
             WantedRecord(
@@ -29,7 +34,7 @@ class WantedFoundRecordsRepository(
         return wantedRecordDao.getAll()
     }
 
-    suspend fun getAllWantedRecordsDTO(): List<WantedRecordDTO> {
+    suspend fun getAllWantedRecordsAsDTO(): List<WantedRecordDTO> {
         return wantedRecordDao.getAll().map { wanted ->
             val foundCount = foundRecordDao.getAllForWantedRecord(wanted.uid).size
             val info = RecordInfoDTO(
@@ -60,6 +65,10 @@ class WantedFoundRecordsRepository(
                 )
             )
         }
+    }
+
+    suspend fun removeWantedRecord(recordInfoDTO: RecordInfoDTO) {
+        wantedRecordDao.delete(recordInfoDTO.discogsRemoteId)
     }
 
     suspend fun getFoundRecordsForParent(parentWantedRecordId: String): List<FoundRecordDTO> {

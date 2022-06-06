@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,7 +45,7 @@ fun RecordDetailScreen(
                 )
             is DetailUiState.Success -> {
                 Column(Modifier.fillMaxSize()) {
-                    Header(s.data) { viewModel.addRecordToWatchList(s.data) }
+                    Header(s.data, s.inWatchList) { viewModel.toggleRecordInWatchList(s.data) }
                     s.data.tracks?.let { Tracks(it) }
                 }
             }
@@ -55,7 +56,7 @@ fun RecordDetailScreen(
 }
 
 @Composable
-private fun Header(recordInfoDTO: RecordInfoDTO, onClick: () -> Unit) {
+private fun Header(recordInfoDTO: RecordInfoDTO, inWatchList: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .padding(
@@ -71,13 +72,24 @@ private fun Header(recordInfoDTO: RecordInfoDTO, onClick: () -> Unit) {
                 .size(50.dp)
                 .padding(end = standardPadding, bottom = standardPadding)
         ) {
-            Icon(
-                Icons.Filled.AddCircle,
-                contentDescription = "add record",
-                tint = Color.White,
-                modifier = Modifier
-                    .size(50.dp)
-            )
+
+            if (inWatchList) {
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = "delete record",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(50.dp)
+                )
+            } else {
+                Icon(
+                    Icons.Filled.AddCircle,
+                    contentDescription = "add record",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(50.dp)
+                )
+            }
         }
     }
 }

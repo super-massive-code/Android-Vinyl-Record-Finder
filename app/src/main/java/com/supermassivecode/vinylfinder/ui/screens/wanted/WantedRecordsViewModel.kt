@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
-import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,14 +26,12 @@ class WantedRecordsViewModel(
      * TODO:
      * viewOnDiscogs
      * delete
-     * view found records + symbol indicating found number
-     * test button to 'search now'
      */
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             //TODO what to do when we have no records? toast?
-            _state.postValue(WantedRecordsUiState.Success(data = repository.getAllWantedRecordsDTO()))
+            _state.postValue(WantedRecordsUiState.Success(data = repository.getAllWantedRecordsAsDTO()))
         }
     }
 }

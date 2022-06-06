@@ -19,9 +19,12 @@ interface WantedRecordDao {
     @Query("SELECT * FROM WantedRecord")
     suspend fun getAll(): List<WantedRecord>
 
+    @Query("SELECT EXISTS (SELECT * FROM WantedRecord WHERE discogs_remote_id = :discogsRemoteId)")
+    suspend fun exists(discogsRemoteId: Int): Boolean
+
     @Insert
     suspend fun insert(record: WantedRecord)
 
-    @Delete
-    suspend fun delete(record: WantedRecord)
+    @Query("DELETE FROM WantedRecord WHERE discogs_remote_id = :discogsRemoteId")
+    suspend fun delete(discogsRemoteId: Int)
 }

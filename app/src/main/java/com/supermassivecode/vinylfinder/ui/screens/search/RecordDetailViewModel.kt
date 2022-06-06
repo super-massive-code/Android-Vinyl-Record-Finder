@@ -13,9 +13,8 @@ import kotlinx.coroutines.launch
 sealed interface DetailUiState {
     object Loading : DetailUiState
     data class Error(@StringRes val alertStringId: Int) : DetailUiState
-    data class Success(val data: RecordInfoDTO) : DetailUiState
+    data class Success(val data: RecordInfoDTO, val inWatchList: Boolean) : DetailUiState
 }
-
 
 class RecordDetailViewModel(
     private val discogsRepository: DiscogsRepository,
@@ -38,19 +37,25 @@ class RecordDetailViewModel(
     private suspend fun searchDiscogs(record: RecordInfoDTO) {
         discogsRepository.releaseDetail(record).let {
             if (it.data != null) {
-                _state.postValue(DetailUiState.Success(data = it.data))
+                _state.postValue(DetailUiState.Success(
+                    data = it.data,
+                    inWatchList = wantedFoundRecordsRepository.wantedRecordExistsInDatabase(it.data))
+                )
             } else {
                 _state.postValue(DetailUiState.Error(it.errorStringId!!))
             }
         }
     }
 
-    fun addRecordToWatchList(recordInfoDTO: RecordInfoDTO) {
+    fun toggleRecordInWatchList(recordInfoDTO: RecordInfoDTO) {
         viewModelScope.launch {
-            val bob =  wantedFoundRecordsRepository.getAllWantedRecords()
-            wantedFoundRecordsRepository.addWantedRecord(recordInfoDTO)
+            if (wantedFoundRecordsRepository.wantedRecordExistsInDatabase(recordInfoDTO)) {
+                wantedFoundRecordsRepository.removeWantedRecord(recordInfoDTO)
+                _state.postValue(DetailUiState.Success(data = recordInfoDTO, inWatchList = false))
+            } else {
+                wantedFoundRecordsRepository.addWantedRecord(recordInfoDTO)
+                _state.postValue(DetailUiState.Success(data = recordInfoDTO, inWatchList = true))
+            }
         }
     }
-
-    //TODO: check if record is in list for whether to show/hide/colour the add button
 }
