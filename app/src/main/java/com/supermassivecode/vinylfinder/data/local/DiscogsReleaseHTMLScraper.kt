@@ -37,10 +37,10 @@ class DiscogsReleaseHTMLScraper(
             val priceSection: Element = row.getElementsByClass("item_price")[0]
             val totalPriceSection: Element = priceSection.getElementsByClass("converted_price")[0]
             val priceString = if (totalPriceSection.childNodes().size == 3) {
-                // e.g. 'about $20.00 total'
+                // example text: 'about $20.00 total'
                 (totalPriceSection.childNodes()[1] as TextNode).wholeText
             } else {
-                // e.g. '$20.00 total'
+                // example text: '$20.00 total'
                 (totalPriceSection.childNodes()[0] as TextNode).wholeText
             }
             val justPrice = currencyUtils.convertFromString(priceString)
