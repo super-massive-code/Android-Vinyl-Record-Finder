@@ -13,6 +13,7 @@ class DiscogsReleaseHTMLScraperTest {
 
     private val bobDylanHTML = "discogs-1596438-Bob-Dylan-The-Freewheelin-Bob-Dylan.html"
     private val carlCarltonHTML = "discogs-942201-Carl-Carlton-Carl-Carlton.html"
+    private val carlTaylorHTML = "discogs-231834-Carl-Taylor-Static.html"
 
     private fun loadFile(fileName: String) = TestResourceLoader.loadTextFile(basePath + fileName)
 
@@ -62,5 +63,17 @@ class DiscogsReleaseHTMLScraperTest {
         )
 
         assertEquals(20, result.size)
+    }
+
+    @Test
+    fun withCarlTaylorWhenMaxPriceIsxThenXShouldBeFound() {
+        val result = DiscogsReleaseHTMLScraper(CurrencyUtils()).scrapeRelease(
+            maxPriceIncludingShipping = 5.00f,
+            localCurrencySymbol = "",
+            htmlDocument = Jsoup.parse(loadFile(carlTaylorHTML)),
+            originUrl = ""
+        )
+
+        assertEquals(2, result.size)
     }
 }
