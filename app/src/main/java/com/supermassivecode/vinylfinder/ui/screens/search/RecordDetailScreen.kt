@@ -1,20 +1,33 @@
 package com.supermassivecode.vinylfinder.ui.screens.search
 
 import android.content.Context
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,15 +35,15 @@ import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
 import com.supermassivecode.vinylfinder.data.local.model.RecordTrackDTO
 import com.supermassivecode.vinylfinder.ui.GenericAlertDialog
 import com.supermassivecode.vinylfinder.ui.theme.standardPadding
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RecordDetailScreen(
     recordJson: String,
     context: Context,
-    viewModel: RecordDetailViewModel = getViewModel()
+    viewModel: RecordDetailViewModel = koinViewModel()
 ) {
-    val state by viewModel.state.observeAsState()
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getReleaseDetail(RecordInfoDTO.fromJson(recordJson)!!)
@@ -41,7 +54,8 @@ fun RecordDetailScreen(
         when (val s = state) {
             is DetailUiState.Loading ->
                 CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.primary
                 )
             is DetailUiState.Success -> {
                 Column(Modifier.fillMaxSize()) {
@@ -76,16 +90,16 @@ private fun Header(recordInfoDTO: RecordInfoDTO, inWatchList: Boolean, onClick: 
             if (inWatchList) {
                 Icon(
                     Icons.Filled.Delete,
-                    contentDescription = "delete record",
-                    tint = Color.White,
+                    contentDescription = "Remove from watchlist",
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .size(50.dp)
                 )
             } else {
                 Icon(
                     Icons.Filled.AddCircle,
-                    contentDescription = "add record",
-                    tint = Color.White,
+                    contentDescription = "Add to watchlist",
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .size(50.dp)
                 )
@@ -121,10 +135,14 @@ private fun TrackItem(track: RecordTrackDTO) {
             Text(
                 text = track.position + ":",
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.width(5.dp))
-            Text(text = track.title)
+            Text(
+                text = track.title,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }

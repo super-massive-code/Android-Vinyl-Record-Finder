@@ -1,13 +1,14 @@
 package com.supermassivecode.vinylfinder.ui.screens.search
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.data.local.DiscogsRepository
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 sealed interface SearchUiState {
@@ -20,12 +21,8 @@ class SearchScreenViewModel(
     private val discogsRepository: DiscogsRepository,
 ) : ViewModel() {
 
-    private var _state = MutableLiveData<SearchUiState>()
-    val state: LiveData<SearchUiState> = _state
-
-    init {
-        _state.postValue(SearchUiState.Success(emptyList()))
-    }
+    private val _state = MutableStateFlow<SearchUiState>(SearchUiState.Success(emptyList()))
+    val state: StateFlow<SearchUiState> = _state.asStateFlow()
 
     fun search(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -34,12 +31,12 @@ class SearchScreenViewModel(
     }
 
     private suspend fun searchDiscogs(query: String) {
-        _state.postValue(SearchUiState.Loading)
+        _state.value = SearchUiState.Loading
         discogsRepository.search(query).let {
             if (it.data != null) {
-                _state.postValue(SearchUiState.Success(data = it.data))
+                _state.value = SearchUiState.Success(data = it.data)
             } else {
-                _state.postValue(SearchUiState.Error(it.errorStringId!!))
+                _state.value = SearchUiState.Error(it.errorStringId!!)
             }
         }
     }

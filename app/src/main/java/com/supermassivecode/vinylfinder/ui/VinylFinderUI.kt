@@ -3,16 +3,23 @@ package com.supermassivecode.vinylfinder.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -35,14 +42,14 @@ fun VinylFinderUI(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.primary
+        color = MaterialTheme.colorScheme.background
     ) {
         var topBarTitle by remember { mutableStateOf("") }
 
         Scaffold(
             topBar = { TopBar(topBarTitle) },
             content = { padding ->
-                Box(modifier = Modifier.padding(bottom = padding.calculateBottomPadding())) {
+                Box(modifier = Modifier.padding(padding)) {
                     ScreenController(appState = appState) { titleText ->
                         topBarTitle = titleText
                     }
@@ -105,36 +112,39 @@ private fun ScreenController(appState: VinylFinderAppState, setTopBarText: (Stri
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(topBarText: String) {
     TopAppBar(
-        backgroundColor = MaterialTheme.colors.background,
-        contentColor = Color.White,
-        elevation = 10.dp
-    ) {
-        Text(
-            modifier = Modifier.padding(10.dp),
-            text = topBarText,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
+        title = {
+            Text(
+                text = topBarText,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
-    }
+    )
 }
 
 @Composable
 private fun BottomBar(navHostController: NavHostController) {
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    BottomNavigation(
-        elevation = 12.dp
-    ) {
-        BottomNavigationItem(
-            icon = { Icon(Icons.Default.List, "Wants List Icon") },
+
+    NavigationBar {
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.List, contentDescription = "Wants List") },
+            label = { Text("Wants") },
             selected = currentRoute == NavigationScreen.Wanted.route,
             onClick = { navHostController.navigate(NavigationScreen.Wanted.route) }
         )
-        BottomNavigationItem(
-            icon = { Icon(Icons.Default.Search, "Search Icon") },
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+            label = { Text("Search") },
             selected = currentRoute == NavigationScreen.Search.route,
             onClick = {
                 navHostController.navigate(NavigationScreen.Search.route) {
@@ -143,8 +153,9 @@ private fun BottomBar(navHostController: NavHostController) {
                 }
             }
         )
-        BottomNavigationItem(
-            icon = { Icon(Icons.Default.AccountBox, "Dev options Icon") },
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.AccountBox, contentDescription = "Developer Options") },
+            label = { Text("Dev") },
             selected = currentRoute == NavigationScreen.DeveloperOptions.route,
             onClick = { navHostController.navigate(NavigationScreen.DeveloperOptions.route) }
         )

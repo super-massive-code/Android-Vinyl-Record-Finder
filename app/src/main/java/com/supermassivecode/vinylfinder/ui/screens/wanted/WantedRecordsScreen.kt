@@ -6,14 +6,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material3.Badge
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -21,29 +23,41 @@ import androidx.navigation.NavController
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
 import com.supermassivecode.vinylfinder.ui.theme.standardPadding
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun WantedRecordsScreen(
     navController: NavController,
-    viewModel: WantedRecordsViewModel = getViewModel()
+    viewModel: WantedRecordsViewModel = koinViewModel()
 ) {
-    val state by viewModel.state.observeAsState()
+    LaunchedEffect(Unit) {
+        viewModel.loadWantedRecords()
+    }
+
+    val state by viewModel.state.collectAsState()
     when (val s = state) {
         is WantedRecordsUiState.Success -> {
             RecordList(records = s.data) { uid ->
                 navController.navigate(NavigationScreen.Found.createRoute(uid))
             }
         }
-        is WantedRecordsUiState.Error -> TODO()
+        is WantedRecordsUiState.Error -> {
+            // TODO: Handle error state with proper error UI
+            Text(
+                text = "Error loading wanted records",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(standardPadding)
+            )
+        }
         null -> {}
+        WantedRecordsUiState.Loading -> TODO()
     }
 }
 
 @Composable
 private fun RecordList(records: List<WantedRecordDTO>, showResults: (uid: String) -> Unit) {
     LazyColumn(
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(standardPadding),
         verticalArrangement = Arrangement.spacedBy(standardPadding)
@@ -61,30 +75,98 @@ private fun RecordItem(dto: WantedRecordDTO, showFound: (uid: String) -> Unit) {
     //TODO: long click / swipe to delete?
     val record = dto.infoDTO
     val foundCount = dto.foundCount
+
     Card(
-        Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
         Box(
-            Modifier
+            modifier = Modifier
                 .padding(standardPadding)
                 .clickable(enabled = foundCount > 0, onClick = { showFound(dto.databaseUid) })
         ) {
-            Column()
-            {
-                Text(record.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Text(record.year)
-                Text(record.label)
-                Text(record.catno)
+            Column {
+                Text(
+                    text = record.title,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = record.year,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = record.label,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = record.catno,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            if (foundCount > 0) {
+                Badge(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd),
+                    containerColor = MaterialTheme.colorScheme.error
+                ) {
+                    Text(
+                        text = foundCount.toString(),
+                        color = MaterialTheme.colorScheme.onError
+                    )
+                }
+            }
+        }
+    }
+}
+
+// Alternative implementation using custom badge layout if preferred
+@Composable
+private fun RecordItemWithCustomBadge(dto: WantedRecordDTO, showFound: (uid: String) -> Unit) {
+    val record = dto.infoDTO
+    val foundCount = dto.foundCount
+
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(standardPadding)
+                .clickable(enabled = foundCount > 0, onClick = { showFound(dto.databaseUid) })
+        ) {
+            Column {
+                Text(
+                    text = record.title,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = record.year,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = record.label,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = record.catno,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
             if (foundCount > 0) {
                 Text(
-                    foundCount.toString(),
+                    text = foundCount.toString(),
                     modifier = Modifier
-                        .background(Color.Red, shape = CircleShape)
+                        .background(
+                            MaterialTheme.colorScheme.error,
+                            shape = CircleShape
+                        )
                         .badgeLayout()
-                        .align(Alignment.BottomEnd)
+                        .align(Alignment.BottomEnd),
+                    color = MaterialTheme.colorScheme.onError
                 )
             }
         }

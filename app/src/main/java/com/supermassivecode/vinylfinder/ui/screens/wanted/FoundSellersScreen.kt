@@ -1,16 +1,17 @@
 package com.supermassivecode.vinylfinder.ui.screens.wanted
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,15 +22,18 @@ import coil.compose.AsyncImage
 import com.supermassivecode.vinylfinder.data.local.model.FoundRecordDTO
 import com.supermassivecode.vinylfinder.ui.theme.standardPadding
 import org.koin.androidx.compose.getViewModel
+import androidx.core.net.toUri
 
 @Composable
 fun FoundSellersScreen(
     uid: String,
     viewModel: FoundSellersViewModel = getViewModel()
 ) {
-    viewModel.loadFound(uid)
+    LaunchedEffect(uid) {
+        viewModel.loadFound(uid)
+    }
 
-    val state by viewModel.state.observeAsState()
+    val state by viewModel.state.collectAsState()
     when (val s = state) {
         is FoundSellersUiState.ShowFound -> {
             SellersList(sellers = s.data) { url ->
@@ -60,12 +64,12 @@ fun SellersList(sellers: List<FoundRecordDTO>, loadUrl: (url: String) -> Unit) {
 @Composable
 fun SellerItem(record: FoundRecordDTO, loadUrl: (url: String) -> Unit) {
     Card(
-        Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = { loadUrl(record.url) })
     ) {
         Row(
-            Modifier.padding(
+            modifier = Modifier.padding(
                 start = standardPadding
             ),
             verticalAlignment = Alignment.CenterVertically
@@ -74,14 +78,24 @@ fun SellerItem(record: FoundRecordDTO, loadUrl: (url: String) -> Unit) {
                 modifier = Modifier
                     .size(25.dp),
                 model = record.shop.imageId,
-                contentDescription = "shop logo"
+                contentDescription = "Shop logo for ${record.shop.shopName}"
             )
             Column(
-                Modifier.padding(standardPadding),
+                modifier = Modifier.padding(standardPadding),
             ) {
-                Text("${record.currency}${record.price}", fontWeight = FontWeight.Bold)
-                Text(record.shop.shopName)
-                Text(record.notes)
+                Text(
+                    text = "${record.currency}${record.price}",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = record.shop.shopName,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = record.notes,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
@@ -89,6 +103,9 @@ fun SellerItem(record: FoundRecordDTO, loadUrl: (url: String) -> Unit) {
 
 @Composable
 fun StartWebView(url: String) {
-    val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    startActivity(LocalContext.current, webIntent, null)
+    val context = LocalContext.current
+    LaunchedEffect(url) {
+        val webIntent = Intent(Intent.ACTION_VIEW, url.toUri())
+        startActivity(context, webIntent, null)
+    }
 }

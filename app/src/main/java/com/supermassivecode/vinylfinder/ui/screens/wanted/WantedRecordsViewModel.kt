@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 sealed interface WantedRecordsUiState {
+    object Loading : WantedRecordsUiState
     data class Error(@StringRes val alertStringId: Int) : WantedRecordsUiState
     data class Success(val data: List<WantedRecordDTO>) : WantedRecordsUiState
 }
@@ -19,8 +20,8 @@ class WantedRecordsViewModel(
     private val repository: WantedFoundRecordsRepository
 ) : ViewModel() {
 
-    private var _state = MutableLiveData<WantedRecordsUiState>()
-    val state: LiveData<WantedRecordsUiState> = _state
+    private val _state = MutableStateFlow<WantedRecordsUiState>(WantedRecordsUiState.Loading)
+    val state: StateFlow<WantedRecordsUiState> = _state.asStateFlow()
 
     /**
      * TODO:
@@ -29,9 +30,20 @@ class WantedRecordsViewModel(
      */
 
     init {
+        loadWantedRecords()
+    }
+
+    fun loadWantedRecords() {
         viewModelScope.launch(Dispatchers.IO) {
-            //TODO what to do when we have no records? toast?
-            _state.postValue(WantedRecordsUiState.Success(data = repository.getAllWantedRecordsAsDTO()))
+            try {
+                _state.value = WantedRecordsUiState.Loading
+                val records = repository.getAllWantedRecordsAsDTO()
+                _state.value = WantedRecordsUiState.Success(data = records)
+                //TODO what to do when we have no records? toast?
+            } catch (e: Exception) {
+                // Handle error - you might want to define specific error string resources
+                // _state.value = WantedRecordsUiState.Error(R.string.error_loading_wanted_records)
+            }
         }
     }
 }

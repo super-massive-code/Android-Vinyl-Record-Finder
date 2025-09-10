@@ -1,7 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
+    id 'org.jetbrains.kotlin.plugin.compose' version "$kotlin_version"
+    id 'com.google.devtools.ksp'
 }
 
 Properties properties = new Properties()
@@ -9,16 +10,15 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 def discogsApiToken = properties.getProperty('discogs.apiToken')
 
 android {
-    compileSdk 32
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.supermassivecode.vinylfinder"
         minSdk 21
-        targetSdk 32
         versionCode 1
         versionName "1.0"
 
-        buildConfigField "String", "DISCOGS_API_TOKEN", discogsApiToken
+        buildConfigField "String", "DISCOGS_API_TOKEN", "\"$discogsApiToken\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -42,27 +42,25 @@ android {
     buildFeatures {
         compose true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion compose_version
-    }
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    namespace 'com.supermassivecode.vinylfinder'
 }
 
 dependencies {
 
     // Core
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
-    implementation "androidx.work:work-runtime-ktx:2.7.1"
+    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.3'
+    implementation "androidx.work:work-runtime-ktx:2.10.3"
 
-    implementation "org.jsoup:jsoup:1.15.1"
+    implementation "org.jsoup:jsoup:1.21.2"
 
     // Koin
-    def koin_version = "3.1.6"
+    def koin_version = "3.5.6"
     implementation "io.insert-koin:koin-core:$koin_version"
     testImplementation "io.insert-koin:koin-test:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"
@@ -71,41 +69,46 @@ dependencies {
     implementation "io.insert-koin:koin-androidx-compose:$koin_version"
 
     // Compose
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.activity:activity-compose:1.4.0'
-    implementation "androidx.navigation:navigation-compose:2.5.0-rc01"
-    implementation 'androidx.compose.runtime:runtime-livedata:1.2.0-beta01'
+    implementation platform('androidx.compose:compose-bom:2025.08.01')
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.activity:activity-compose:1.10.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3'
+    implementation 'androidx.navigation:navigation-compose:2.9.3'
 
     // Room
-    def room_version = "2.4.2"
+    def room_version = "2.7.2"
     implementation "androidx.room:room-ktx:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
 
     // Coroutines
-    def coroutines_version = "1.5.2"
+    def coroutines_version = "1.10.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     // Retrofit/Moshi
     def retrofit_version = "2.9.0"
-    def moshi_version = "1.13.0"
+    def moshi_version = "1.15.2"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+    ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
 
     // Coil
-    def coil_version = "2.0.0-rc03"
+    def coil_version = "2.7.0"
     implementation "io.coil-kt:coil:$coil_version"
     implementation("io.coil-kt:coil-compose:$coil_version")
     implementation("io.coil-kt:coil-svg:$coil_version")
 
+    // Debug tools
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
     // Testing
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
 }

@@ -1,12 +1,13 @@
 package com.supermassivecode.vinylfinder.ui.screens.wanted
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.FoundRecordDTO
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 sealed interface FoundSellersUiState {
@@ -18,20 +19,16 @@ class FoundSellersViewModel(
     private val foundRecordsRepository: WantedFoundRecordsRepository
 ) : ViewModel() {
 
-    private val _state = MutableLiveData<FoundSellersUiState>()
-    val state: LiveData<FoundSellersUiState> = _state
-
-    init {
-        _state.postValue(FoundSellersUiState.ShowFound(emptyList()))
-    }
+    private val _state = MutableStateFlow<FoundSellersUiState>(FoundSellersUiState.ShowFound(emptyList()))
+    val state: StateFlow<FoundSellersUiState> = _state.asStateFlow()
 
     fun loadFound(uid: String) {
         viewModelScope.launch(Dispatchers.IO) {
-           _state.postValue(FoundSellersUiState.ShowFound(foundRecordsRepository.getFoundRecordsForParent(uid)))
+            _state.value = FoundSellersUiState.ShowFound(foundRecordsRepository.getFoundRecordsForParent(uid))
         }
     }
 
     fun loadUrl(url: String) {
-        _state.postValue(FoundSellersUiState.LoadWebView(url))
+        _state.value = FoundSellersUiState.LoadWebView(url)
     }
 }
