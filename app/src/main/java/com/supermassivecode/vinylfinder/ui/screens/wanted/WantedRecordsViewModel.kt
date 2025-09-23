@@ -1,13 +1,14 @@
 package com.supermassivecode.vinylfinder.ui.screens.wanted
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 sealed interface WantedRecordsUiState {
@@ -46,4 +47,5 @@ class WantedRecordsViewModel(
             }
         }
     }
+
 }

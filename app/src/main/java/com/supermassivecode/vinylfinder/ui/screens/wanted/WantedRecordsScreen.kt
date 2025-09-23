@@ -50,7 +50,7 @@ fun WantedRecordsScreen(
             )
         }
         null -> {}
-        WantedRecordsUiState.Loading -> TODO()
+        WantedRecordsUiState.Loading -> {}
     }
 }
 
