@@ -1,16 +1,10 @@
-# Vinyl Finder
+# Vinyl Record Finder
 
-<p align="center">
-  <img src="app_icon.png" alt="Vinyl Finder Icon" width="100" height="100">
-</p>
-
-<p align="center">
-  <em>Find and discover vinyl records with ease</em>
-</p>
+<img src="vinyl_icon_large.png" alt="Vinyl Finder Icon" width="300" height="300">
 
 ## About
 
-Vinyl Finder is an Android app that helps vinyl enthusiasts setup search alerts for vinyl records on the Discogs marketplace that meet a price threshold.
+Vinyl Record Finder is an Android app that helps vinyl enthusiasts setup search alerts for vinyl records on the Discogs marketplace that meet a price threshold.
 
 **Note: this is a work in progress.**
 
@@ -24,4 +18,4 @@ discogs.apiToken=your_token_here
 
 ## License
 
-MIT
+This project is licensed under the MIT License.
