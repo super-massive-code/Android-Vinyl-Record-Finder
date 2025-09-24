@@ -15,6 +15,7 @@ sealed interface DetailUiState {
     object Loading : DetailUiState
     data class Error(@StringRes val alertStringId: Int) : DetailUiState
     data class Success(val data: RecordInfoDTO, val inWatchList: Boolean) : DetailUiState
+    data class RequestMaxPriceForRecord(val title: String, val message: String, val record: RecordInfoDTO) : DetailUiState
 }
 
 class RecordDetailViewModel(
@@ -49,11 +50,24 @@ class RecordDetailViewModel(
         viewModelScope.launch {
             if (wantedFoundRecordsRepository.wantedRecordExistsInDatabase(recordInfoDTO)) {
                 wantedFoundRecordsRepository.removeWantedRecord(recordInfoDTO)
-                _state.value = DetailUiState.Success(data = recordInfoDTO, inWatchList = false)
+                _state.value = DetailUiState.Success(
+                    data = recordInfoDTO,
+                    inWatchList = false
+                )
             } else {
-                wantedFoundRecordsRepository.addWantedRecord(recordInfoDTO)
-                _state.value = DetailUiState.Success(data = recordInfoDTO, inWatchList = true)
+                _state.value = DetailUiState.RequestMaxPriceForRecord(
+                    title = "Set Max Price",
+                    message = "What is the maximum you are willing to pay?",
+                    record = recordInfoDTO
+                )
             }
+        }
+    }
+
+    fun addWantedRecord(recordInfoDTO: RecordInfoDTO, maxPrice: Float? = null) {
+        viewModelScope.launch {
+            wantedFoundRecordsRepository.addWantedRecord(recordInfoDTO, maxPrice)
+            _state.value = DetailUiState.Success(data = recordInfoDTO, inWatchList = true)
         }
     }
 }

@@ -4,4 +4,5 @@ data class WantedRecordDTO(
     val infoDTO: RecordInfoDTO,
     val foundCount: Int,
     val databaseUid: String,
+    val maxPrice: Float?
 )

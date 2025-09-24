@@ -18,14 +18,15 @@ class WantedFoundRecordsRepository(
         return wantedRecordDao.exists(record.discogsRemoteId)
     }
 
-    suspend fun addWantedRecord(recordInfoDTO: RecordInfoDTO) {
+    suspend fun addWantedRecord(recordInfoDTO: RecordInfoDTO, maxPrice: Float?) {
         wantedRecordDao.insert(
             WantedRecord(
                 discogsRemoteId = recordInfoDTO.discogsRemoteId,
                 recordTitle = recordInfoDTO.title,
                 catNo = recordInfoDTO.catno,
                 year = recordInfoDTO.year,
-                label = recordInfoDTO.label
+                label = recordInfoDTO.label,
+                maxPrice = maxPrice
             )
         )
     }
@@ -47,7 +48,8 @@ class WantedFoundRecordsRepository(
             WantedRecordDTO(
                 infoDTO = info,
                 foundCount = foundCount,
-                databaseUid = wanted.uid
+                databaseUid = wanted.uid,
+                maxPrice = wanted.maxPrice
             )
         }
     }

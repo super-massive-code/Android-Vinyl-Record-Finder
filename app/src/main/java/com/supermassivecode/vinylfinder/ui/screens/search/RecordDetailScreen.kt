@@ -13,22 +13,31 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
@@ -63,8 +72,14 @@ fun RecordDetailScreen(
                     s.data.tracks?.let { Tracks(it) }
                 }
             }
+            is DetailUiState.RequestMaxPriceForRecord -> {
+                RequestMaxPrice(
+                    s.title,
+                    s.message,
+                    onSave = { viewModel.addWantedRecord(s.record, it) },
+                    onDecideLater = { viewModel.addWantedRecord(s.record) })
+            }
             is DetailUiState.Error -> GenericAlertDialog(context, s.alertStringId)
-            null -> {}
         }
     }
 }
@@ -145,4 +160,68 @@ private fun TrackItem(track: RecordTrackDTO) {
             )
         }
     }
+}
+
+@Composable
+private fun RequestMaxPrice(
+    title: String,
+    message: String,
+    onSave: (Float) -> Unit,
+    onDecideLater: () -> Unit
+) {
+    var priceText by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDecideLater,
+        title = {
+            Text(title)
+        },
+        text = {
+            Column {
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                OutlinedTextField(
+                    value = priceText,
+                    onValueChange = { newValue: String ->
+                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                            priceText = newValue  // Fix: actually assign the value
+                        }
+                    },
+                    label = { Text("Max Price")},
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal,
+                        imeAction = ImeAction.Done
+                    ),
+                    isError = isError,
+                    supportingText = if (isError) {
+                        { Text("Please enter a valid price") }
+                    } else null,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val price = priceText.toFloatOrNull()
+                    if (price != null && price > 0) {
+                        onSave(price)
+                    } else {
+                        isError = true
+                    }
+                }
+            ) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDecideLater) {
+                Text("Decide Later")
+            }
+        }
+    )
 }

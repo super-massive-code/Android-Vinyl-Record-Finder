@@ -10,7 +10,8 @@ data class WantedRecord(
     @ColumnInfo(name = "record_title") val recordTitle: String,
     @ColumnInfo(name = "cat_no") val catNo: String,
     @ColumnInfo(name = "label") val label: String,
-    @ColumnInfo(name = "year") val year: String
+    @ColumnInfo(name = "year") val year: String,
+    @ColumnInfo(name = "max_price") val maxPrice: Float?
 )
 
 @Dao
