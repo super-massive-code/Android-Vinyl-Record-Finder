@@ -137,12 +137,6 @@ private fun BottomBar(navHostController: NavHostController) {
 
     NavigationBar {
         NavigationBarItem(
-            icon = { Icon(Icons.Default.List, contentDescription = "Wants List") },
-            label = { Text("Wants") },
-            selected = currentRoute == NavigationScreen.Wanted.route,
-            onClick = { navHostController.navigate(NavigationScreen.Wanted.route) }
-        )
-        NavigationBarItem(
             icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
             label = { Text("Search") },
             selected = currentRoute == NavigationScreen.Search.route,
@@ -152,6 +146,12 @@ private fun BottomBar(navHostController: NavHostController) {
                     //TODO need to save state, where?
                 }
             }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.List, contentDescription = "Wants List") },
+            label = { Text("Wants") },
+            selected = currentRoute == NavigationScreen.Wanted.route,
+            onClick = { navHostController.navigate(NavigationScreen.Wanted.route) }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.AccountBox, contentDescription = "Developer Options") },
