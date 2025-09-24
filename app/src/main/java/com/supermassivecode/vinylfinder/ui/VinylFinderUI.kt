@@ -142,8 +142,12 @@ private fun BottomBar(navHostController: NavHostController) {
             selected = currentRoute == NavigationScreen.Search.route,
             onClick = {
                 navHostController.navigate(NavigationScreen.Search.route) {
+                    popUpTo(NavigationScreen.Search.route) {
+                        inclusive = false
+                        saveState = true
+                    }
+                    launchSingleTop = true
                     restoreState = true
-                    //TODO need to save state, where?
                 }
             }
         )
