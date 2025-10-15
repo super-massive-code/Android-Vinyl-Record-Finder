@@ -6,6 +6,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.getViewModel
 
@@ -17,7 +18,7 @@ fun DeveloperOptionsScreen(
         Modifier.padding(8.dp)
     ) {
         Button(onClick = { viewModel.searchForWantedRecords() }) {
-            Text(text = "Trigger Wanted Search")
+            Text(text = "Trigger Wanted Search", color = Color.White)
         }
     }
 }
