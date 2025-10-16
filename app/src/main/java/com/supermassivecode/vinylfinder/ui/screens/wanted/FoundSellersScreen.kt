@@ -43,7 +43,6 @@ fun FoundSellersScreen(
         is FoundSellersUiState.LoadWebView -> {
             StartWebView(url = s.url)
         }
-        null -> {}
     }
 }
 
