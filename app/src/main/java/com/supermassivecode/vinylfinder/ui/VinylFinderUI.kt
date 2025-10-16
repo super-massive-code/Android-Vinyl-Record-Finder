@@ -141,9 +141,22 @@ private fun BottomBar(navHostController: NavHostController) {
             label = { Text("Search") },
             selected = currentRoute == NavigationScreen.Search.route,
             onClick = {
+                // Reset screen to fresh
                 navHostController.navigate(NavigationScreen.Search.route) {
                     popUpTo(NavigationScreen.Search.route) {
-                        inclusive = false
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.List, contentDescription = "Wants List") },
+            label = { Text("Wants") },
+            selected = currentRoute == NavigationScreen.Wanted.route,
+            onClick = {
+                navHostController.navigate(NavigationScreen.Wanted.route) {
+                    popUpTo(navHostController.graph.startDestinationId) {
                         saveState = true
                     }
                     launchSingleTop = true
@@ -152,16 +165,20 @@ private fun BottomBar(navHostController: NavHostController) {
             }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.List, contentDescription = "Wants List") },
-            label = { Text("Wants") },
-            selected = currentRoute == NavigationScreen.Wanted.route,
-            onClick = { navHostController.navigate(NavigationScreen.Wanted.route) }
-        )
-        NavigationBarItem(
             icon = { Icon(Icons.Default.AccountBox, contentDescription = "Developer Options") },
             label = { Text("Dev") },
             selected = currentRoute == NavigationScreen.DeveloperOptions.route,
-            onClick = { navHostController.navigate(NavigationScreen.DeveloperOptions.route) }
+            onClick = {
+                navHostController.navigate(NavigationScreen.DeveloperOptions.route) {
+                    popUpTo(navHostController.graph.startDestinationId) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
         )
     }
+
+
 }
