@@ -1,6 +1,8 @@
 package com.supermassivecode.vinylfinder.ui.screens.wanted
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,17 +12,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
+
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.supermassivecode.vinylfinder.data.CurrencyUtils
@@ -41,9 +54,15 @@ fun WantedRecordsScreen(
     val state by viewModel.state.collectAsState()
     when (val s = state) {
         is WantedRecordsUiState.Success -> {
-            RecordList(records = s.data) { uid ->
-                navController.navigate(NavigationScreen.Found.createRoute(uid))
-            }
+            RecordList(
+                records = s.data,
+                showResults = { discogsRemoteId ->
+                    navController.navigate(NavigationScreen.Found.createRoute(discogsRemoteId))
+                },
+                onDelete = { discogsRemoteId ->
+                    viewModel.deleteWantedRecord(discogsRemoteId)
+                }
+            )
         }
         is WantedRecordsUiState.Error -> {
             Text(
@@ -56,26 +75,85 @@ fun WantedRecordsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RecordList(records: List<WantedRecordDTO>, showResults: (uid: String) -> Unit) {
+private fun RecordList(
+    records: List<WantedRecordDTO>,
+    showResults: (databaseUid: String) -> Unit,
+    onDelete: (discogsRemoteId: Int) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(standardPadding),
         verticalArrangement = Arrangement.spacedBy(standardPadding)
     ) {
-        items(items = records) { dto ->
-            RecordItem(dto) {
-                showResults(it)
+        items(
+            items = records,
+            key = { it.databaseUid }
+        ) { dto ->
+            SwipeToDeleteItem(
+                dto = dto,
+                onDelete = { onDelete(dto.infoDTO.discogsRemoteId) },
+                showFound = { showResults(it) }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwipeToDeleteItem(
+    dto: WantedRecordDTO,
+    onDelete: () -> Unit,
+    showFound: (uid: String) -> Unit,
+) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { dismissValue ->
+            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                onDelete()
+                true
+            } else {
+                false
             }
         }
+    )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        backgroundContent = {
+            val color by animateColorAsState(
+                when (dismissState.targetValue) {
+                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
+                    else -> Color.Transparent
+                },
+                label = "background_color"
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color)
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    tint = Color.White
+                )
+            }
+        },
+        enableDismissFromStartToEnd = false,
+        enableDismissFromEndToStart = true
+    ) {
+        RecordItem(dto, showFound)
     }
 }
 
 @SuppressLint("DefaultLocale")
 @Composable
 private fun RecordItem(dto: WantedRecordDTO, showFound: (uid: String) -> Unit) {
-    //TODO: long click / swipe to delete?
     val record = dto.infoDTO
     val foundCount = dto.foundCount
 

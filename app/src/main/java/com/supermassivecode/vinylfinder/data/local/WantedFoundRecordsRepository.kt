@@ -69,8 +69,8 @@ class WantedFoundRecordsRepository(
         }
     }
 
-    suspend fun removeWantedRecord(recordInfoDTO: RecordInfoDTO) {
-        wantedRecordDao.delete(recordInfoDTO.discogsRemoteId)
+    suspend fun removeWantedRecord(discogsRemoteId: Int) {
+        wantedRecordDao.delete(discogsRemoteId)
     }
 
     suspend fun getFoundRecordsForParent(parentWantedRecordId: String): List<FoundRecordDTO> {

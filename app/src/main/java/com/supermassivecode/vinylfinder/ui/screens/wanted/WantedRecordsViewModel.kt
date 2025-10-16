@@ -4,7 +4,9 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
+import com.supermassivecode.vinylfinder.data.local.model.RecordInfoDTO
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
+import com.supermassivecode.vinylfinder.data.local.room.WantedRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,12 +26,6 @@ class WantedRecordsViewModel(
     private val _state = MutableStateFlow<WantedRecordsUiState>(WantedRecordsUiState.Loading)
     val state: StateFlow<WantedRecordsUiState> = _state.asStateFlow()
 
-    /**
-     * TODO:
-     * viewOnDiscogs
-     * delete
-     */
-
     init {
         loadWantedRecords()
     }
@@ -40,12 +36,14 @@ class WantedRecordsViewModel(
                 _state.value = WantedRecordsUiState.Loading
                 val records = repository.getAllWantedRecordsAsDTO()
                 _state.value = WantedRecordsUiState.Success(data = records)
-                //TODO what to do when we have no records? toast?
-            } catch (e: Exception) {
-                // Handle error - you might want to define specific error string resources
-                // _state.value = WantedRecordsUiState.Error(R.string.error_loading_wanted_records)
-            }
+            } catch (e: Exception) {}
         }
     }
 
+    fun deleteWantedRecord(discogsRemoteId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.removeWantedRecord(discogsRemoteId)
+            loadWantedRecords()
+        }
+    }
 }

@@ -49,7 +49,7 @@ class RecordDetailViewModel(
     fun toggleRecordInWatchList(recordInfoDTO: RecordInfoDTO) {
         viewModelScope.launch {
             if (wantedFoundRecordsRepository.wantedRecordExistsInDatabase(recordInfoDTO)) {
-                wantedFoundRecordsRepository.removeWantedRecord(recordInfoDTO)
+                wantedFoundRecordsRepository.removeWantedRecord(recordInfoDTO.discogsRemoteId)
                 _state.value = DetailUiState.Success(
                     data = recordInfoDTO,
                     inWatchList = false
