@@ -10,6 +10,5 @@ class DeveloperOptionsViewModel(
 
     fun searchForWantedRecords() {
         WantedRecordsWorkManager.runOneTimeRequest(appContext)
-        //TODO pass app context or?
     }
 }

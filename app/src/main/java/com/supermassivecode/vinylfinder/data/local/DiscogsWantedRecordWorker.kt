@@ -17,7 +17,6 @@ class DiscogsWantedRecordWorker(
      */
 
     suspend fun doWork() {
-        //TODO add delay so not hammering website or do this externally from call site?
         wantedFoundRecordsRepository.getAllWantedRecords().map { wantedRecord ->
             if (wantedRecord.maxPrice ==  null) { return }
 
