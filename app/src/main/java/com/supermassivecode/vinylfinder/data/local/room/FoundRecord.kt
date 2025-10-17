@@ -11,7 +11,8 @@ data class FoundRecord(
     @ColumnInfo(name = "wanted_record_id") val wantedRecordId: String,
     @ColumnInfo(name = "url") val url: String,
     @ColumnInfo(name = "seller") val seller: String,
-    @ColumnInfo(name = "price") val price: Float,
+    @ColumnInfo(name = "recordPrice") val recordPrice: Float,
+    @ColumnInfo(name = "totalPrice") val totalPrice: Float,
     @ColumnInfo(name = "currency") val currency: String,
     @ColumnInfo(name = "notes") val notes: String
 )
@@ -40,14 +41,14 @@ class ShopConvertor {
 @Dao
 interface FoundRecordDao {
 
-    @Query("SELECT * FROM FoundRecord WHERE wanted_record_id LIKE :parentId ORDER BY price ASC")
+    @Query("SELECT * FROM FoundRecord WHERE wanted_record_id LIKE :parentId ORDER BY recordPrice ASC")
     suspend fun getAllForWantedRecord(parentId: String): List<FoundRecord>
 
     @Query("SELECT EXISTS(SELECT * FROM FoundRecord WHERE" +
             " url = :url AND" +
             " notes = :notes AND " +
-            " price = :price)")
-    suspend fun exists(url: String, notes: String, price: Float): Boolean
+            " recordPrice = :recordPrice)")
+    suspend fun exists(url: String, notes: String, recordPrice: Float): Boolean
 
     @Insert
     suspend fun insert(record: FoundRecord)

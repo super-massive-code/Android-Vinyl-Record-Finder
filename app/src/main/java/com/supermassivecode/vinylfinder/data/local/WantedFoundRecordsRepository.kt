@@ -55,13 +55,14 @@ class WantedFoundRecordsRepository(
     }
 
     suspend fun addFoundRecordIfNotExists(parentId: String, found: FoundRecordDTO) {
-        if (!foundRecordDao.exists(found.url, found.notes, found.price)) {
+        if (!foundRecordDao.exists(found.url, found.notes, found.totalPriceIncShipping)) {
             foundRecordDao.insert(
                 FoundRecord(
                     wantedRecordId = parentId,
                     url = found.url,
                     notes = found.notes,
-                    price = found.price,
+                    recordPrice = found.recordPrice,
+                    totalPrice = found.totalPriceIncShipping,
                     currency = found.currency,
                     seller = found.shop.shopName
                 )
@@ -77,10 +78,11 @@ class WantedFoundRecordsRepository(
         return foundRecordDao.getAllForWantedRecord(parentWantedRecordId).map {
             FoundRecordDTO(
                 url = it.url,
-                price = it.price,
+                recordPrice = it.recordPrice,
+                totalPriceIncShipping = it.totalPrice,
                 notes = it.notes,
                 currency = it.currency,
-                shop = Shop.DISCOGS
+                shop = Shop.DISCOGS,
             )
         }
     }

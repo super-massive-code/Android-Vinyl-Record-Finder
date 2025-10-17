@@ -18,24 +18,29 @@ class DiscogsWantedRecordWorker(
 
     suspend fun doWork() {
         wantedFoundRecordsRepository.getAllWantedRecords().map { wantedRecord ->
+
             if (wantedRecord.maxPrice ==  null) { return }
 
-            val url = "https://www.discogs.com/sell/release/${wantedRecord.discogsRemoteId}?sort=price%2Casc&limit=250&page=1"
-            val doc: Document = Jsoup.connect(url)
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-                .timeout(10000) // 10 seconds
-                .followRedirects(true)
-                .get()
-            scraper.scrapeRelease(
-                maxPriceIncludingShipping = wantedRecord.maxPrice,
-                localCurrencySymbol = currencyUtils.localSymbol(),
-                htmlDocument = doc,
-                originUrl = url
-            ).map { foundRecord ->
-                wantedFoundRecordsRepository.addFoundRecordIfNotExists(
-                    wantedRecord.uid,
-                    foundRecord,
-                )
+            try {
+                val url = "https://www.discogs.com/sell/release/${wantedRecord.discogsRemoteId}?sort=price%2Casc&limit=250&page=1"
+                val doc: Document = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                    .timeout(10000) // 10 seconds
+                    .followRedirects(true)
+                    .get()
+                scraper.scrapeRelease(
+                    maxPrice = wantedRecord.maxPrice,
+                    localCurrencySymbol = currencyUtils.localSymbol(),
+                    htmlDocument = doc,
+                    originUrl = url
+                ).map { foundRecord ->
+                    wantedFoundRecordsRepository.addFoundRecordIfNotExists(
+                        wantedRecord.uid,
+                        foundRecord,
+                    )
+                }
+            } catch (ex: Exception) {
+                // TODO: log out / notify
             }
         }
     }

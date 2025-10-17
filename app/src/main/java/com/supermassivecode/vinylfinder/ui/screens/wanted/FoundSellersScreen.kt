@@ -83,9 +83,14 @@ fun SellerItem(record: FoundRecordDTO, loadUrl: (url: String) -> Unit) {
                 modifier = Modifier.padding(standardPadding),
             ) {
                 Text(
-                    text = "${record.currency}${record.price}",
+                    text = "${record.currency}:${record.recordPrice}",
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "+ shipping: ${record.currency}:${record.totalPriceIncShipping}",
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = record.shop.shopName,
