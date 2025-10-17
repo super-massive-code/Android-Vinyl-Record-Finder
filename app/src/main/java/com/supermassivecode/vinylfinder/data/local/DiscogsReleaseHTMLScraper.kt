@@ -10,7 +10,7 @@ class DiscogsReleaseHTMLScraper(
     private val currencyUtils: CurrencyUtils
 ) {
     fun scrapeRelease(
-        maxPrice: Float,
+        maxRecordPricePrice: Float,
         localCurrencySymbol: String,
         htmlDocument: Document,
         originUrl: String,
@@ -18,30 +18,34 @@ class DiscogsReleaseHTMLScraper(
         return htmlDocument
             .select("table.table_block tr:not(.unavailable):not(:first-child)")
             .mapNotNull { row ->
-                parseRow(row, maxPrice, localCurrencySymbol, originUrl)
+                parseRow(row, maxRecordPricePrice, localCurrencySymbol, originUrl)
             }
     }
 
     private fun parseRow(
         row: Element,
-        maxPrice: Float,
+        maxRecordPricePrice: Float,
         localCurrencySymbol: String,
         originUrl: String
     ): FoundRecordDTO? {
-        val prices = extractPricesFromRow(row) ?: return null
-        if (prices.totalPrice > maxPrice) return null
+        try {
+            val prices = extractPricesFromRow(row) ?: return null
+            if (prices.recordPrice > maxRecordPricePrice) return null
 //        if (prices.currency != localCurrencySymbol) return null // TODO: use currency GBP or USD rather than $
 
-        val sellerName = extractSellerName(row) ?: "Unknown"
+            val sellerName = extractSellerName(row) ?: "Unknown"
 
-        return FoundRecordDTO(
-            shop = Shop.DISCOGS,
-            url = originUrl,
-            notes = "Seller name: $sellerName",
-            recordPrice = prices.recordPrice,
-            totalPriceIncShipping = prices.totalPrice,
-            currency = prices.currency
-        )
+            return FoundRecordDTO(
+                shop = Shop.DISCOGS,
+                url = originUrl,
+                notes = "Seller name: $sellerName",
+                recordPrice = prices.recordPrice,
+                totalPriceIncShipping = prices.totalPrice,
+                currency = prices.currency
+            )
+        } catch (ex: Exception) {
+            return null
+        }
     }
 
     private data class PriceInfo(

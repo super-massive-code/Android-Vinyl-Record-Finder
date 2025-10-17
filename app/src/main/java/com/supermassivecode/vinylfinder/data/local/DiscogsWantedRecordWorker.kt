@@ -29,7 +29,7 @@ class DiscogsWantedRecordWorker(
                     .followRedirects(true)
                     .get()
                 scraper.scrapeRelease(
-                    maxPrice = wantedRecord.maxPrice,
+                    maxRecordPricePrice = wantedRecord.maxPrice,
                     localCurrencySymbol = currencyUtils.localSymbol(),
                     htmlDocument = doc,
                     originUrl = url
