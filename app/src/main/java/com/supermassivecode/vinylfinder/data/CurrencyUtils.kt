@@ -8,9 +8,18 @@ class CurrencyUtils(
 ) {
     fun localSymbol(): String = currency.symbol
 
-    fun stripNonNumericChars(string: String): Float {
-        val re = Regex("[^0-9.]")
-        val cleaned = re.replace(string, "")
-        return cleaned.toFloat()
+    fun localCurrencyCode(): String = currency.currencyCode
+
+    companion object {
+
+        fun stripNonNumericChars(string: String): Float {
+            val re = Regex("[^0-9.]")
+            val cleaned = re.replace(string, "")
+            return cleaned.toFloat()
+        }
+
+        fun symbolForCode(currencyCode: String): String {
+            return Currency.getInstance(currencyCode).symbol
+        }
     }
 }

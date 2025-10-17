@@ -6,32 +6,30 @@ import com.supermassivecode.vinylfinder.data.local.model.Shop
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
-class DiscogsReleaseHTMLScraper(
-    private val currencyUtils: CurrencyUtils
-) {
+class DiscogsReleaseHTMLScraper {
     fun scrapeRelease(
         maxRecordPricePrice: Float,
-        localCurrencySymbol: String,
+        localCurrencyCode: String,
         htmlDocument: Document,
         originUrl: String,
     ): List<FoundRecordDTO> {
         return htmlDocument
             .select("table.table_block tr:not(.unavailable):not(:first-child)")
             .mapNotNull { row ->
-                parseRow(row, maxRecordPricePrice, localCurrencySymbol, originUrl)
+                parseRow(row, maxRecordPricePrice, localCurrencyCode, originUrl)
             }
     }
 
     private fun parseRow(
         row: Element,
         maxRecordPricePrice: Float,
-        localCurrencySymbol: String,
+        localCurrencyCode: String,
         originUrl: String
     ): FoundRecordDTO? {
         try {
             val prices = extractPricesFromRow(row) ?: return null
+            if (prices.currencyCode != localCurrencyCode) return null
             if (prices.recordPrice > maxRecordPricePrice) return null
-//        if (prices.currency != localCurrencySymbol) return null // TODO: use currency GBP or USD rather than $
 
             val sellerName = extractSellerName(row) ?: "Unknown"
 
@@ -41,9 +39,9 @@ class DiscogsReleaseHTMLScraper(
                 notes = "Seller name: $sellerName",
                 recordPrice = prices.recordPrice,
                 totalPriceIncShipping = prices.totalPrice,
-                currency = prices.currency
+                currencyCode = prices.currencyCode
             )
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             return null
         }
     }
@@ -51,7 +49,7 @@ class DiscogsReleaseHTMLScraper(
     private data class PriceInfo(
         val recordPrice: Float,
         val totalPrice: Float,
-        val currency: String
+        val currencyCode: String
     )
 
     private fun extractPricesFromRow(row: Element): PriceInfo? {
@@ -68,7 +66,7 @@ class DiscogsReleaseHTMLScraper(
             ?.trim()
             ?: return null
 
-        val totalPrice = currencyUtils.stripNonNumericChars(totalPriceText)
+        val totalPrice = CurrencyUtils.stripNonNumericChars(totalPriceText)
 
         return PriceInfo(recordPrice, totalPrice, currency)
     }

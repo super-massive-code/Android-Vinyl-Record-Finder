@@ -30,7 +30,7 @@ class DiscogsWantedRecordWorker(
                     .get()
                 scraper.scrapeRelease(
                     maxRecordPricePrice = wantedRecord.maxPrice,
-                    localCurrencySymbol = currencyUtils.localSymbol(),
+                    localCurrencyCode = currencyUtils.localCurrencyCode(),
                     htmlDocument = doc,
                     originUrl = url
                 ).map { foundRecord ->

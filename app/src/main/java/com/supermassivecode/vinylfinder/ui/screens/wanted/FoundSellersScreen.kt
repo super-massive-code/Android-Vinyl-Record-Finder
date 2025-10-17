@@ -23,6 +23,7 @@ import com.supermassivecode.vinylfinder.data.local.model.FoundRecordDTO
 import com.supermassivecode.vinylfinder.ui.theme.standardPadding
 import org.koin.androidx.compose.getViewModel
 import androidx.core.net.toUri
+import com.supermassivecode.vinylfinder.data.CurrencyUtils
 
 @Composable
 fun FoundSellersScreen(
@@ -82,13 +83,16 @@ fun SellerItem(record: FoundRecordDTO, loadUrl: (url: String) -> Unit) {
             Column(
                 modifier = Modifier.padding(standardPadding),
             ) {
+
+                val currencySymbol = CurrencyUtils.symbolForCode(record.currencyCode)
+
                 Text(
-                    text = "${record.currency}:${record.recordPrice}",
+                    text = "${currencySymbol}:${record.recordPrice}",
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "+ shipping: ${record.currency}:${record.totalPriceIncShipping}",
+                    text = "+ shipping: ${currencySymbol}:${record.totalPriceIncShipping}",
                     fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

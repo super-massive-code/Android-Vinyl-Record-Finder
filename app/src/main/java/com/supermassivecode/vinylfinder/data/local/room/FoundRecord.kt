@@ -13,7 +13,7 @@ data class FoundRecord(
     @ColumnInfo(name = "seller") val seller: String,
     @ColumnInfo(name = "recordPrice") val recordPrice: Float,
     @ColumnInfo(name = "totalPrice") val totalPrice: Float,
-    @ColumnInfo(name = "currency") val currency: String,
+    @ColumnInfo(name = "currencyCode") val currencyCode: String,
     @ColumnInfo(name = "notes") val notes: String
 )
 
@@ -52,7 +52,6 @@ interface FoundRecordDao {
 
     @Insert
     suspend fun insert(record: FoundRecord)
-
 
     @Delete
     suspend fun delete(record: FoundRecord)

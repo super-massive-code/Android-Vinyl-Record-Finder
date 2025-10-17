@@ -6,5 +6,5 @@ data class FoundRecordDTO(
     val recordPrice: Float,
     val totalPriceIncShipping: Float,
     val notes: String = "",
-    val currency: String
+    val currencyCode: String
 )

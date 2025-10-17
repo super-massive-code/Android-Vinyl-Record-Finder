@@ -63,7 +63,7 @@ class WantedFoundRecordsRepository(
                     notes = found.notes,
                     recordPrice = found.recordPrice,
                     totalPrice = found.totalPriceIncShipping,
-                    currency = found.currency,
+                    currencyCode = found.currencyCode,
                     seller = found.shop.shopName
                 )
             )
@@ -81,7 +81,7 @@ class WantedFoundRecordsRepository(
                 recordPrice = it.recordPrice,
                 totalPriceIncShipping = it.totalPrice,
                 notes = it.notes,
-                currency = it.currency,
+                currencyCode = it.currencyCode,
                 shop = Shop.DISCOGS,
             )
         }
