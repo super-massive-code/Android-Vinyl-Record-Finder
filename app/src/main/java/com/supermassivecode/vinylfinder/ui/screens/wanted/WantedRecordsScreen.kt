@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,13 +23,13 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -164,6 +163,7 @@ private fun RecordItem(dto: WantedRecordDTO, showFound: (uid: String) -> Unit) {
             modifier = Modifier
                 .padding(standardPadding)
                 .clickable(enabled = foundCount > 0, onClick = { showFound(dto.databaseUid) })
+                .fillMaxWidth()
         ) {
             Column {
                 Text(
@@ -199,12 +199,15 @@ private fun RecordItem(dto: WantedRecordDTO, showFound: (uid: String) -> Unit) {
             if (foundCount > 0) {
                 Badge(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd),
-                    containerColor = MaterialTheme.colorScheme.error
+                        .align(Alignment.BottomEnd)
+                        .scale(1.3f),
+                    containerColor = Color.White
                 ) {
                     Text(
                         text = foundCount.toString(),
-                        color = MaterialTheme.colorScheme.onError
+                        color = Color.DarkGray,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
