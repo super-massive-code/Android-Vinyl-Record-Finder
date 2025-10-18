@@ -22,9 +22,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -41,36 +41,49 @@ import com.supermassivecode.vinylfinder.navigation.NavigationScreen
 import com.supermassivecode.vinylfinder.ui.theme.standardPadding
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WantedRecordsScreen(
     navController: NavController,
     viewModel: WantedRecordsViewModel = koinViewModel()
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.loadWantedRecords()
-    }
 
     val state by viewModel.state.collectAsState()
-    when (val s = state) {
-        is WantedRecordsUiState.Success -> {
-            RecordList(
-                records = s.data,
-                showResults = { discogsRemoteId ->
-                    navController.navigate(NavigationScreen.Found.createRoute(discogsRemoteId))
-                },
-                onDelete = { discogsRemoteId ->
-                    viewModel.deleteWantedRecord(discogsRemoteId)
+
+    val isRefreshing = state is WantedRecordsUiState.Loading
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.searchDiscogsForWantedRecords() }
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (val s = state) {
+                is WantedRecordsUiState.Success -> {
+                    RecordList(
+                        records = s.data,
+                        showResults = { discogsRemoteId ->
+                            navController.navigate(
+                                NavigationScreen.Found.createRoute(
+                                    discogsRemoteId
+                                )
+                            )
+                        },
+                        onDelete = { discogsRemoteId ->
+                            viewModel.deleteWantedRecord(discogsRemoteId)
+                        }
+                    )
                 }
-            )
+
+                is WantedRecordsUiState.Error -> {
+                    Text(
+                        text = "Error loading wanted records",
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(standardPadding)
+                    )
+                }
+
+                WantedRecordsUiState.Loading -> {}
+            }
         }
-        is WantedRecordsUiState.Error -> {
-            Text(
-                text = "Error loading wanted records",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(standardPadding)
-            )
-        }
-        WantedRecordsUiState.Loading -> {}
     }
 }
 

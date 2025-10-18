@@ -35,6 +35,10 @@ class WantedFoundRecordsRepository(
         return wantedRecordDao.getAll()
     }
 
+    suspend fun getAllWithMaxPriceSet(): List<WantedRecord> {
+        return wantedRecordDao.getAllWithMaxPriceSet()
+    }
+
     suspend fun getAllWantedRecordsAsDTO(): List<WantedRecordDTO> {
         return wantedRecordDao.getAll().map { wanted ->
             val foundCount = foundRecordDao.getAllForWantedRecord(wanted.uid).size

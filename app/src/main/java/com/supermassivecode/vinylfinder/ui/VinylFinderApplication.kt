@@ -7,6 +7,7 @@ import com.supermassivecode.vinylfinder.data.local.*
 import com.supermassivecode.vinylfinder.data.local.room.FoundRecordDao
 import com.supermassivecode.vinylfinder.data.local.room.VinylFinderRoomDatabase
 import com.supermassivecode.vinylfinder.data.local.room.WantedRecordDao
+import com.supermassivecode.vinylfinder.data.remote.discogs.DiscogsWantedSearch
 import com.supermassivecode.vinylfinder.ui.screens.developeroptions.DeveloperOptionsViewModel
 import com.supermassivecode.vinylfinder.ui.screens.search.RecordDetailViewModel
 import com.supermassivecode.vinylfinder.ui.screens.search.SearchScreenViewModel
@@ -20,6 +21,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import kotlin.math.sin
 
 class VinylFinderApplication : Application(), KoinComponent {
 
@@ -35,10 +37,12 @@ class VinylFinderApplication : Application(), KoinComponent {
         single { provideDatabase(get()) }
         single { provideWantedRecordDao(get()) }
         single { provideFoundRecordDao(get()) }
-        single { DiscogsWantedRecordWorker(get(), get(), get()) }
+        single { DiscogsWantedRecordWorker(get(), get()) }
+        single { DiscogsWantedSearch(get(), get()) }
+        single { DiscogsReleaseHTMLScraper() }
         viewModel { SearchScreenViewModel(get()) }
         viewModel { RecordDetailViewModel(get(), get()) }
-        viewModel { WantedRecordsViewModel(get()) }
+        viewModel { WantedRecordsViewModel(get(), get()) }
         viewModel { DeveloperOptionsViewModel(get()) }
         viewModel { FoundSellersViewModel(get())}
         worker { WantedRecordsWorkManager(get(), get()) }

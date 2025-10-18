@@ -20,6 +20,9 @@ interface WantedRecordDao {
     @Query("SELECT * FROM WantedRecord")
     suspend fun getAll(): List<WantedRecord>
 
+    @Query("SELECT * FROM WantedRecord WHERE max_price IS NOT NULL")
+    suspend fun getAllWithMaxPriceSet(): List<WantedRecord>
+
     @Query("SELECT EXISTS (SELECT * FROM WantedRecord WHERE discogs_remote_id = :discogsRemoteId)")
     suspend fun exists(discogsRemoteId: Int): Boolean
 
