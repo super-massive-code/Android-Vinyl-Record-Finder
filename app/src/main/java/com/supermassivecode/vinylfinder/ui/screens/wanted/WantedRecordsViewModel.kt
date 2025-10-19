@@ -3,6 +3,7 @@ package com.supermassivecode.vinylfinder.ui.screens.wanted
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.supermassivecode.vinylfinder.Logger
 import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import com.supermassivecode.vinylfinder.data.remote.discogs.DiscogsWantedSearch
@@ -64,7 +65,7 @@ class WantedRecordsViewModel(
             }
 
             searchResults.exception?.let { exception ->
-                // TODO: log exception with partial results count: ${searchResults.found.size} records processed
+                Logger.logException(exception, "Found count: ${searchResults.found.size}")
             }
 
             loadWantedRecords()

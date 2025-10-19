@@ -1,5 +1,6 @@
 package com.supermassivecode.vinylfinder.data.local
 
+import com.supermassivecode.vinylfinder.Logger
 import com.supermassivecode.vinylfinder.data.remote.discogs.DiscogsWantedSearch
 
 
@@ -23,7 +24,7 @@ class DiscogsWantedRecordWorker(
         }
 
         searchResults.exception?.let { exception ->
-            // TODO: log exception with partial results count: ${searchResults.found.size} records processed
+            Logger.logException(exception, "Found record count ${searchResults.found.size}")
         }
     }
 }

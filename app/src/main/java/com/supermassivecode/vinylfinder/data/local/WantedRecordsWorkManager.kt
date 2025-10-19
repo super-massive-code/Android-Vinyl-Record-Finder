@@ -2,6 +2,7 @@ package com.supermassivecode.vinylfinder.data.local
 
 import android.content.Context
 import androidx.work.*
+import com.supermassivecode.vinylfinder.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
@@ -23,6 +24,7 @@ class WantedRecordsWorkManager(
                 // TODO: how to group all workers and doWork()? Do we need to?
                 // TODO: shall we run them in parallel?
             } catch (ex: Exception) {
+                Logger.logException(ex)
                 success = false
             }
         }
