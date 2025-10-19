@@ -1,9 +1,12 @@
 package com.supermassivecode.vinylfinder.ui.screens.wanted
 
+import TimestampManager
+import android.provider.Settings.Global.getString
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.Logger
+import com.supermassivecode.vinylfinder.R
 import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import com.supermassivecode.vinylfinder.data.remote.discogs.DiscogsWantedSearch
@@ -15,13 +18,15 @@ import kotlinx.coroutines.launch
 
 sealed interface WantedRecordsUiState {
     object Loading : WantedRecordsUiState
-    data class Error(@StringRes val alertStringId: Int) : WantedRecordsUiState
-    data class Success(val data: List<WantedRecordDTO>) : WantedRecordsUiState
+    data class Error(@StringRes val stringId: Int) : WantedRecordsUiState
+    data class Success(val data: List<WantedRecordDTO>,
+                       val lastUpdateMessage: String) : WantedRecordsUiState
 }
 
 class WantedRecordsViewModel(
     private val wantedFoundRecordsRepository: WantedFoundRecordsRepository,
-    private val discogsWantedSearch: DiscogsWantedSearch
+    private val discogsWantedSearch: DiscogsWantedSearch,
+    private val timestampManager: TimestampManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WantedRecordsUiState>(WantedRecordsUiState.Loading)
@@ -36,8 +41,14 @@ class WantedRecordsViewModel(
             try {
                 _state.value = WantedRecordsUiState.Loading
                 val records = wantedFoundRecordsRepository.getAllWantedRecordsAsDTO()
-                _state.value = WantedRecordsUiState.Success(data = records)
-            } catch (e: Exception) {}
+                val lastUpdateMessage = "Last checked: ${timestampManager.getLastPriceCheckFormatted() ?: "-"}"
+                _state.value = WantedRecordsUiState.Success(
+                    data = records,
+                    lastUpdateMessage = lastUpdateMessage)
+            } catch (e: Exception) {
+                Logger.logException(e)
+                _state.value = WantedRecordsUiState.Error(R.string.wanted_record_load_error)
+            }
         }
     }
 
@@ -52,9 +63,7 @@ class WantedRecordsViewModel(
         _state.value = WantedRecordsUiState.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
-            print("")
             val searchResults = discogsWantedSearch.search(wantedFoundRecordsRepository.getAllWithMaxPriceSet())
-            print("")
             searchResults.found.forEach { (wantedRecord, foundRecords) ->
                 foundRecords.forEach { found ->
                     wantedFoundRecordsRepository.addFoundRecordIfNotExists(
@@ -68,6 +77,7 @@ class WantedRecordsViewModel(
                 Logger.logException(exception, "Found count: ${searchResults.found.size}")
             }
 
+            timestampManager.stampRecordPriceCheck()
             loadWantedRecords()
         }
     }

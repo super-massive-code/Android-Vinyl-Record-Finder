@@ -1,7 +1,13 @@
 package com.supermassivecode.vinylfinder.data.local
 
+import TimestampManager
 import android.content.Context
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import com.supermassivecode.vinylfinder.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,6 +20,7 @@ class WantedRecordsWorkManager(
 ) : CoroutineWorker(appContext, workerParams), KoinComponent {
 
     private val discogsWorker: DiscogsWantedRecordWorker by inject()
+    private val timestampManager: TimestampManager by inject()
 
     override suspend fun doWork(): Result {
 
@@ -29,6 +36,7 @@ class WantedRecordsWorkManager(
             }
         }
         return if (success) {
+            timestampManager.stampRecordPriceCheck()
             Result.success()
         } else {
             Result.failure()

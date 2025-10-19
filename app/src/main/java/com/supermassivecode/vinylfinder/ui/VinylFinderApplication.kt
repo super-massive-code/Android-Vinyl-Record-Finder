@@ -1,5 +1,6 @@
 package com.supermassivecode.vinylfinder.ui
 
+import TimestampManager
 import android.app.Application
 import androidx.room.Room
 import com.supermassivecode.vinylfinder.data.CurrencyUtils
@@ -30,6 +31,8 @@ class VinylFinderApplication : Application(), KoinComponent {
     private val koinModule = module {
         single { this }
         single(named(ioDispatcher)) { Dispatchers.IO }
+        single { TimestampManager(get()) }
+        single { KeyValueStore(get()) }
         single { DiscogsReleaseHTMLScraper() }
         single { CurrencyUtils() }
         single { DiscogsRepository() }
@@ -42,10 +45,10 @@ class VinylFinderApplication : Application(), KoinComponent {
         single { DiscogsReleaseHTMLScraper() }
         viewModel { SearchScreenViewModel(get()) }
         viewModel { RecordDetailViewModel(get(), get()) }
-        viewModel { WantedRecordsViewModel(get(), get()) }
+        viewModel { WantedRecordsViewModel(get(), get(), get()) }
         viewModel { DeveloperOptionsViewModel(get()) }
         viewModel { FoundSellersViewModel(get())}
-        worker { WantedRecordsWorkManager(get(), get()) }
+        worker { WantedRecordsWorkManager(get(), get())}
     }
 
     private fun provideDatabase(application: Application): VinylFinderRoomDatabase {

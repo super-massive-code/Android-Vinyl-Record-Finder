@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "com.supermassivecode.vinylfinder"
-        minSdk 23
+        minSdk 26
         versionCode 1
         versionName "1.0"
 
@@ -67,6 +67,7 @@ dependencies {
     implementation "io.insert-koin:koin-androidx-workmanager:$koin_version"
     implementation "io.insert-koin:koin-androidx-navigation:$koin_version"
     implementation "io.insert-koin:koin-androidx-compose:$koin_version"
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
     // Compose
     implementation platform('androidx.compose:compose-bom:2025.10.00')

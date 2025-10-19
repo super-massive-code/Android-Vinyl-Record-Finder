@@ -8,4 +8,6 @@
     <string name="server_error_500">Internal Server Error</string>
     <string name="server_error_generic">There has been an error</string>
 
+    <string name="wanted_record_load_error">Error loading records</string>
+
 </resources>
