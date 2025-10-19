@@ -29,7 +29,7 @@ class DiscogsReleaseHTMLScraper {
         try {
             val prices = extractPricesFromRow(row) ?: return null
             if (prices.currencyCode != localCurrencyCode) return null
-            if (prices.recordPrice > maxRecordPricePrice) return null
+            if (prices.recordPrice <= maxRecordPricePrice) return null
 
             val sellerName = extractSellerName(row) ?: "Unknown"
 
