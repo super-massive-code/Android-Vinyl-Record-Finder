@@ -1,6 +1,6 @@
 package com.supermassivecode.vinylfinder.ui
 
-import TimestampManager
+import com.supermassivecode.vinylfinder.TimestampManager
 import android.app.Application
 import androidx.room.Room
 import com.supermassivecode.vinylfinder.data.CurrencyUtils
@@ -22,7 +22,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import kotlin.math.sin
 
 class VinylFinderApplication : Application(), KoinComponent {
 

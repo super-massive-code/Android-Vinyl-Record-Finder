@@ -1,3 +1,5 @@
+package com.supermassivecode.vinylfinder
+
 import com.supermassivecode.vinylfinder.data.local.KeyValueStore
 import java.text.SimpleDateFormat
 import java.util.*

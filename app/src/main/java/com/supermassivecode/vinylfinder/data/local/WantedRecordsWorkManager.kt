@@ -1,6 +1,6 @@
 package com.supermassivecode.vinylfinder.data.local
 
-import TimestampManager
+import com.supermassivecode.vinylfinder.TimestampManager
 import android.content.Context
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker

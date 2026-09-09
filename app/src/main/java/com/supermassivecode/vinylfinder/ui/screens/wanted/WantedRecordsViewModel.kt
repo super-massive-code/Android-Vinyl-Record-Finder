@@ -1,7 +1,6 @@
 package com.supermassivecode.vinylfinder.ui.screens.wanted
 
-import TimestampManager
-import android.provider.Settings.Global.getString
+import com.supermassivecode.vinylfinder.TimestampManager
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
