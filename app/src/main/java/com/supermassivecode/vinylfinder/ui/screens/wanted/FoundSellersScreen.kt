@@ -21,14 +21,14 @@ import androidx.core.content.ContextCompat.startActivity
 import coil.compose.AsyncImage
 import com.supermassivecode.vinylfinder.data.local.model.FoundRecordDTO
 import com.supermassivecode.vinylfinder.ui.theme.standardPadding
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.core.net.toUri
 import com.supermassivecode.vinylfinder.data.CurrencyUtils
 
 @Composable
 fun FoundSellersScreen(
     uid: String,
-    viewModel: FoundSellersViewModel = getViewModel()
+    viewModel: FoundSellersViewModel = koinViewModel()
 ) {
     LaunchedEffect(uid) {
         viewModel.loadFound(uid)

@@ -8,11 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DeveloperOptionsScreen(
-    viewModel: DeveloperOptionsViewModel = getViewModel()
+    viewModel: DeveloperOptionsViewModel = koinViewModel()
 ) {
     Column(
         Modifier.padding(8.dp)

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -10,7 +12,12 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 def discogsApiToken = properties.getProperty('discogs.apiToken')
 
 android {
-    compileSdk 36
+
+    compileSdk 37
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId "com.supermassivecode.vinylfinder"
@@ -33,15 +40,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
+
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
-    buildFeatures {
-        compose true
-    }
+
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
@@ -53,45 +62,45 @@ android {
 dependencies {
 
     // Core
-    implementation 'androidx.core:core-ktx:1.17.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.9.4'
-    implementation "androidx.work:work-runtime-ktx:2.10.4"
+    implementation 'androidx.core:core-ktx:1.19.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.11.0'
+    implementation "androidx.work:work-runtime-ktx:2.11.2"
 
-    implementation "org.jsoup:jsoup:1.21.2"
+    implementation "org.jsoup:jsoup:1.23.2"
 
     // Koin
-    def koin_version = "3.5.6"
+    def koin_version = "4.2.2"
     implementation "io.insert-koin:koin-core:$koin_version"
     testImplementation "io.insert-koin:koin-test:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"
     implementation "io.insert-koin:koin-androidx-workmanager:$koin_version"
     implementation "io.insert-koin:koin-androidx-navigation:$koin_version"
     implementation "io.insert-koin:koin-androidx-compose:$koin_version"
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
     // Compose
-    implementation platform('androidx.compose:compose-bom:2025.10.00')
+    implementation platform('androidx.compose:compose-bom:2026.08.00')
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.material3:material3'
-    implementation 'androidx.activity:activity-compose:1.11.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4'
-    implementation 'androidx.navigation:navigation-compose:2.9.5'
+    implementation 'androidx.activity:activity-compose:1.13.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0'
+    implementation 'androidx.navigation:navigation-compose:2.10.0'
     implementation 'androidx.compose.material:material-icons-extended'
 
     // Room
-    def room_version = "2.8.2"
+    def room_version = "2.8.4"
     implementation "androidx.room:room-ktx:$room_version"
     ksp "androidx.room:room-compiler:$room_version"
 
     // Coroutines
-    def coroutines_version = "1.10.2"
+    def coroutines_version = "1.11.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     // Retrofit/Moshi
-    def retrofit_version = "2.9.0"
+    def retrofit_version = "3.0.0"
     def moshi_version = "1.15.2"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
