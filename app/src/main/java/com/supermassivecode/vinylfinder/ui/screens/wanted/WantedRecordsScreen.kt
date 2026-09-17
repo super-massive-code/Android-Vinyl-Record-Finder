@@ -16,8 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -45,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.supermassivecode.vinylfinder.Logger
+import com.supermassivecode.vinylfinder.R
 import com.supermassivecode.vinylfinder.data.CurrencyUtils
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import com.supermassivecode.vinylfinder.navigation.NavigationScreen
@@ -125,23 +124,24 @@ fun WantedRecordsScreen(
                     showPriceEditDialog.value = false
                 },
                 title = {
-                    Text("Edit Max Price", color = MaterialTheme.colorScheme.onSurface)
+                    Text(stringResource(R.string.edit_max_price_title), color = MaterialTheme.colorScheme.onSurface)
                 },
                 text = {
                     Column {
                         Text(
-                            "Current price: ${
+                            stringResource(
+                                R.string.current_price_label,
                                 record.maxPrice?.let {
                                     val currencyUtils = CurrencyUtils()
                                     "${currencyUtils.localSymbol()}${String.format("%.2f", it)}"
-                                } ?: "Not set"
-                            }",
+                                } ?: stringResource(R.string.not_set),
+                            ),
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         TextField(
                             value = newPriceValue.value,
                             onValueChange = { newPriceValue.value = it },
-                            label = { Text("New Price", color = MaterialTheme.colorScheme.onSurface) },
+                            label = { Text(stringResource(R.string.new_price_label), color = MaterialTheme.colorScheme.onSurface) },
                             singleLine = true,
                             colors =
                                 androidx.compose.material3.TextFieldDefaults.colors(
@@ -172,7 +172,7 @@ fun WantedRecordsScreen(
                             showPriceEditDialog.value = false
                         },
                     ) {
-                        Text("Save")
+                        Text(stringResource(R.string.save_button))
                     }
                 },
                 dismissButton = {
@@ -181,7 +181,7 @@ fun WantedRecordsScreen(
                             showPriceEditDialog.value = false
                         },
                     ) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.dialog_cta_cancel))
                     }
                 },
             )

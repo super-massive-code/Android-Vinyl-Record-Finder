@@ -12,4 +12,10 @@
     <string name="dialog_cta_cancel">Cancel</string>
     <string name="dialog_cta_positive">Confirm</string>
 
+    <string name="edit_max_price_title">Edit Max Price</string>
+    <string name="current_price_label">Current price: %s</string>
+    <string name="not_set">Not set</string>
+    <string name="new_price_label">New Price</string>
+    <string name="save_button">Save</string>
+
 </resources>
