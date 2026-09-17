@@ -1,11 +1,11 @@
 package com.supermassivecode.vinylfinder.ui.screens.wanted
 
-import com.supermassivecode.vinylfinder.TimestampManager
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supermassivecode.vinylfinder.Logger
 import com.supermassivecode.vinylfinder.R
+import com.supermassivecode.vinylfinder.TimestampManager
 import com.supermassivecode.vinylfinder.data.local.WantedFoundRecordsRepository
 import com.supermassivecode.vinylfinder.data.local.model.WantedRecordDTO
 import com.supermassivecode.vinylfinder.data.remote.discogs.DiscogsWantedSearch
@@ -17,17 +17,22 @@ import kotlinx.coroutines.launch
 
 sealed interface WantedRecordsUiState {
     object Loading : WantedRecordsUiState
-    data class Error(@StringRes val stringId: Int) : WantedRecordsUiState
-    data class Success(val data: List<WantedRecordDTO>,
-                       val lastUpdateMessage: String) : WantedRecordsUiState
+
+    data class Error(
+        @param:StringRes val stringId: Int,
+    ) : WantedRecordsUiState
+
+    data class Success(
+        val data: List<WantedRecordDTO>,
+        val lastUpdateMessage: String,
+    ) : WantedRecordsUiState
 }
 
 class WantedRecordsViewModel(
     private val wantedFoundRecordsRepository: WantedFoundRecordsRepository,
     private val discogsWantedSearch: DiscogsWantedSearch,
-    private val timestampManager: TimestampManager
+    private val timestampManager: TimestampManager,
 ) : ViewModel() {
-
     private val _state = MutableStateFlow<WantedRecordsUiState>(WantedRecordsUiState.Loading)
     val state: StateFlow<WantedRecordsUiState> = _state.asStateFlow()
 
@@ -41,9 +46,11 @@ class WantedRecordsViewModel(
                 _state.value = WantedRecordsUiState.Loading
                 val records = wantedFoundRecordsRepository.getAllWantedRecordsAsDTO()
                 val lastUpdateMessage = "Last checked: ${timestampManager.getLastPriceCheckFormatted() ?: "-"}"
-                _state.value = WantedRecordsUiState.Success(
-                    data = records,
-                    lastUpdateMessage = lastUpdateMessage)
+                _state.value =
+                    WantedRecordsUiState.Success(
+                        data = records,
+                        lastUpdateMessage = lastUpdateMessage,
+                    )
             } catch (e: Exception) {
                 Logger.logException(e)
                 _state.value = WantedRecordsUiState.Error(R.string.wanted_record_load_error)
@@ -54,6 +61,16 @@ class WantedRecordsViewModel(
     fun deleteWantedRecord(discogsRemoteId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             wantedFoundRecordsRepository.removeWantedRecord(discogsRemoteId)
+            loadWantedRecords()
+        }
+    }
+
+    fun updateMaxPrice(
+        databaseUid: String,
+        maxPrice: Float,
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            wantedFoundRecordsRepository.updateWantedRecordMaxPrice(databaseUid, maxPrice)
             loadWantedRecords()
         }
     }

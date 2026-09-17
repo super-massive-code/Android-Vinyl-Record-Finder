@@ -14,7 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,11 +24,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -47,40 +52,51 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun WantedRecordsScreen(
     navController: NavController,
-    viewModel: WantedRecordsViewModel = koinViewModel()
+    viewModel: WantedRecordsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+
+    // State for price editing
+    val showPriceEditDialog = remember { mutableStateOf(false) }
+    val currentRecordForEditing = remember { mutableStateOf<WantedRecordDTO?>(null) }
+    val newPriceValue = remember { mutableStateOf("") }
 
     val isRefreshing = state is WantedRecordsUiState.Loading
     PullToRefreshBox(
         isRefreshing = isRefreshing,
-        onRefresh = { viewModel.searchDiscogsForWantedRecords() }
+        onRefresh = { viewModel.searchDiscogsForWantedRecords() },
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             when (val s = state) {
                 is WantedRecordsUiState.Success -> {
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
                     ) {
                         Text(
                             s.lastUpdateMessage,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            textAlign = TextAlign.Center
-                            )
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                            textAlign = TextAlign.Center,
+                        )
                         RecordList(
                             records = s.data,
                             showResults = { discogsRemoteId ->
                                 navController.navigate(
                                     NavigationScreen.Found.createRoute(
-                                        discogsRemoteId
-                                    )
+                                        discogsRemoteId,
+                                    ),
                                 )
                             },
                             onDelete = { discogsRemoteId ->
                                 viewModel.deleteWantedRecord(discogsRemoteId)
-                            }
+                            },
+                            onEditPrice = { record ->
+                                currentRecordForEditing.value = record
+                                newPriceValue.value = record.maxPrice?.toString() ?: ""
+                                showPriceEditDialog.value = true
+                            },
                         )
                     }
                 }
@@ -89,12 +105,77 @@ fun WantedRecordsScreen(
                     Text(
                         text = stringResource(s.stringId),
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(standardPadding)
+                        modifier = Modifier.padding(standardPadding),
                     )
                 }
 
                 WantedRecordsUiState.Loading -> {}
             }
+        }
+    }
+
+    // Price editing dialog implementation
+    currentRecordForEditing.value?.let { record ->
+        if (showPriceEditDialog.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    showPriceEditDialog.value = false
+                },
+                title = {
+                    Text("Edit Max Price")
+                },
+                text = {
+                    Column {
+                        Text(
+                            "Current price: ${
+                                record.maxPrice?.let { 
+                                    val currencyUtils = CurrencyUtils()
+                                    "${currencyUtils.localSymbol()}${String.format("%.2f", it)}"
+                                } ?: "Not set"
+                            }"
+                        )
+                        TextField(
+                            value = newPriceValue.value,
+                            onValueChange = { newPriceValue.value = it },
+                            label = { Text("New Price") },
+                            singleLine = true,
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            // Parse and update the price
+                            val newPrice =
+                                if (newPriceValue.value.isNotEmpty()) {
+                                    try {
+                                        newPriceValue.value.toFloat()
+                                    } catch (e: NumberFormatException) {
+                                        null
+                                    }
+                                } else {
+                                    null // Clear the price if empty
+                                }
+
+                            newPrice?.let {
+                                viewModel.updateMaxPrice(record.databaseUid, it)
+                            }
+                            showPriceEditDialog.value = false
+                        },
+                    ) {
+                        Text("Save")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            showPriceEditDialog.value = false
+                        },
+                    ) {
+                        Text("Cancel")
+                    }
+                },
+            )
         }
     }
 }
@@ -104,22 +185,25 @@ fun WantedRecordsScreen(
 private fun RecordList(
     records: List<WantedRecordDTO>,
     showResults: (databaseUid: String) -> Unit,
-    onDelete: (discogsRemoteId: Int) -> Unit
+    onDelete: (discogsRemoteId: Int) -> Unit,
+    onEditPrice: (record: WantedRecordDTO) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(standardPadding),
-        verticalArrangement = Arrangement.spacedBy(standardPadding)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(standardPadding),
+        verticalArrangement = Arrangement.spacedBy(standardPadding),
     ) {
         items(
             items = records,
-            key = { it.databaseUid }
+            key = { it.databaseUid },
         ) { dto ->
             SwipeToDeleteItem(
                 dto = dto,
                 onDelete = { onDelete(dto.infoDTO.discogsRemoteId) },
-                showFound = { showResults(it) }
+                showFound = { showResults(it) },
+                onEditPrice = { onEditPrice(dto) },
             )
         }
     }
@@ -131,17 +215,19 @@ private fun SwipeToDeleteItem(
     dto: WantedRecordDTO,
     onDelete: () -> Unit,
     showFound: (uid: String) -> Unit,
+    onEditPrice: (record: WantedRecordDTO) -> Unit,
 ) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { dismissValue ->
-            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-                onDelete()
-                true
-            } else {
-                false
-            }
-        }
-    )
+    val dismissState =
+        rememberSwipeToDismissBoxState(
+            confirmValueChange = { dismissValue ->
+                if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                    onDelete()
+                    true
+                } else {
+                    false
+                }
+            },
+        )
 
     SwipeToDismissBox(
         state = dismissState,
@@ -151,88 +237,97 @@ private fun SwipeToDeleteItem(
                     SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
                     else -> Color.Transparent
                 },
-                label = "background_color"
+                label = "background_color",
             )
 
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color)
-                    .padding(horizontal = 20.dp),
-                contentAlignment = Alignment.CenterEnd
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(color)
+                        .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.CenterEnd,
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
-                    tint = Color.White
+                    tint = Color.White,
                 )
             }
         },
         enableDismissFromStartToEnd = false,
-        enableDismissFromEndToStart = true
+        enableDismissFromEndToStart = true,
     ) {
-        RecordItem(dto, showFound)
+        RecordItem(dto, showFound, onEditPrice)
     }
 }
 
 @SuppressLint("DefaultLocale")
 @Composable
-private fun RecordItem(dto: WantedRecordDTO, showFound: (uid: String) -> Unit) {
+private fun RecordItem(
+    dto: WantedRecordDTO,
+    showFound: (uid: String) -> Unit,
+    onEditPrice: (record: WantedRecordDTO) -> Unit,
+) {
     val record = dto.infoDTO
     val foundCount = dto.foundCount
 
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Box(
-            modifier = Modifier
-                .padding(standardPadding)
-                .clickable(enabled = foundCount > 0, onClick = { showFound(dto.databaseUid) })
-                .fillMaxWidth()
+            modifier =
+                Modifier
+                    .padding(standardPadding)
+                    .clickable(enabled = foundCount > 0, onClick = { showFound(dto.databaseUid) })
+                    .fillMaxWidth(),
         ) {
             Column {
                 Text(
                     text = record.title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     text = record.year,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = record.label,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = record.catno,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    text = if (dto.maxPrice != null) {
-                        "My max price: ${CurrencyUtils().localSymbol()}${String.format("%.2f", dto.maxPrice)}"
-                    } else {
-                        "My max price: Not set"
-                    },
+                    text =
+                        if (dto.maxPrice != null) {
+                            "My max price: ${CurrencyUtils().localSymbol()}${String.format("%.2f", dto.maxPrice)}"
+                        } else {
+                            "My max price: Not set"
+                        },
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable { onEditPrice(dto) },
                 )
             }
 
             if (foundCount > 0) {
                 Badge(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .scale(1.3f),
-                    containerColor = Color.White
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .scale(1.3f),
+                    containerColor = Color.White,
                 ) {
                     Text(
                         text = foundCount.toString(),
                         color = Color.DarkGray,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
