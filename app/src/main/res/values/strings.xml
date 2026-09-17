@@ -9,5 +9,7 @@
     <string name="server_error_generic">There has been an error</string>
 
     <string name="wanted_record_load_error">Error loading records</string>
+    <string name="dialog_cta_cancel">Cancel</string>
+    <string name="dialog_cta_positive">Confirm</string>
 
 </resources>

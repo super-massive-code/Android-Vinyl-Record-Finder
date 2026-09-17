@@ -18,17 +18,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
+import com.supermassivecode.vinylfinder.data.CurrencyUtils
 import com.supermassivecode.vinylfinder.data.local.model.FoundRecordDTO
 import com.supermassivecode.vinylfinder.ui.theme.standardPadding
 import org.koin.androidx.compose.koinViewModel
-import androidx.core.net.toUri
-import com.supermassivecode.vinylfinder.data.CurrencyUtils
 
 @Composable
 fun FoundSellersScreen(
     uid: String,
-    viewModel: FoundSellersViewModel = koinViewModel()
+    viewModel: FoundSellersViewModel = koinViewModel(),
 ) {
     LaunchedEffect(uid) {
         viewModel.loadFound(uid)
@@ -41,6 +41,7 @@ fun FoundSellersScreen(
                 viewModel.loadUrl(url = url)
             }
         }
+
         is FoundSellersUiState.LoadWebView -> {
             StartWebView(url = s.url)
         }
@@ -48,12 +49,15 @@ fun FoundSellersScreen(
 }
 
 @Composable
-fun SellersList(sellers: List<FoundRecordDTO>, loadUrl: (url: String) -> Unit) {
+fun SellersList(
+    sellers: List<FoundRecordDTO>,
+    loadUrl: (url: String) -> Unit,
+) {
     LazyColumn(
         Modifier
             .fillMaxSize()
             .padding(standardPadding),
-        verticalArrangement = Arrangement.spacedBy(standardPadding)
+        verticalArrangement = Arrangement.spacedBy(standardPadding),
     ) {
         items(items = sellers) { record: FoundRecordDTO ->
             SellerItem(record = record, loadUrl)
@@ -62,47 +66,52 @@ fun SellersList(sellers: List<FoundRecordDTO>, loadUrl: (url: String) -> Unit) {
 }
 
 @Composable
-fun SellerItem(record: FoundRecordDTO, loadUrl: (url: String) -> Unit) {
+fun SellerItem(
+    record: FoundRecordDTO,
+    loadUrl: (url: String) -> Unit,
+) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = { loadUrl(record.url) })
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { loadUrl(record.url) }),
     ) {
         Row(
-            modifier = Modifier.padding(
-                start = standardPadding
-            ),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier.padding(
+                    start = standardPadding,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
-                modifier = Modifier
-                    .size(25.dp),
+                modifier =
+                    Modifier
+                        .size(25.dp),
                 model = record.shop.imageId,
-                contentDescription = "Shop logo for ${record.shop.shopName}"
+                contentDescription = "Shop logo for ${record.shop.shopName}",
             )
             Column(
                 modifier = Modifier.padding(standardPadding),
             ) {
-
                 val currencySymbol = CurrencyUtils.symbolForCode(record.currencyCode)
 
                 Text(
-                    text = "${currencySymbol}:${record.recordPrice}",
+                    text = "$currencySymbol:${record.recordPrice}",
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "+ shipping: ${currencySymbol}:${record.totalPriceIncShipping}",
+                    text = "+ shipping: $currencySymbol:${record.totalPriceIncShipping}",
                     fontWeight = FontWeight.Normal,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = record.shop.shopName,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = record.notes,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }

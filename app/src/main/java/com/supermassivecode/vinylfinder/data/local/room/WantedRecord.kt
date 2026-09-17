@@ -11,12 +11,11 @@ data class WantedRecord(
     @ColumnInfo(name = "cat_no") val catNo: String,
     @ColumnInfo(name = "label") val label: String,
     @ColumnInfo(name = "year") val year: String,
-    @ColumnInfo(name = "max_price") val maxPrice: Float?
+    @ColumnInfo(name = "max_price") val maxPrice: Float?,
 )
 
 @Dao
 interface WantedRecordDao {
-
     @Query("SELECT * FROM WantedRecord")
     suspend fun getAll(): List<WantedRecord>
 
@@ -28,6 +27,12 @@ interface WantedRecordDao {
 
     @Insert
     suspend fun insert(record: WantedRecord)
+
+    @Query("UPDATE WantedRecord SET max_price = :maxPrice WHERE uid = :uid")
+    suspend fun updateMaxPrice(
+        uid: String,
+        maxPrice: Float,
+    )
 
     @Query("DELETE FROM WantedRecord WHERE discogs_remote_id = :discogsRemoteId")
     suspend fun delete(discogsRemoteId: Int)

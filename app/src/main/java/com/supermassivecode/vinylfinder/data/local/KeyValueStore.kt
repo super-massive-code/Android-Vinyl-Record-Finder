@@ -5,16 +5,21 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import kotlinx.serialization.json.Json
 
-class KeyValueStore(context: Context) {
-
-    val prefs: SharedPreferences = context.getSharedPreferences(
-        "vinyl_finder_prefs",
-        Context.MODE_PRIVATE
-    )
+class KeyValueStore(
+    context: Context,
+) {
+    val prefs: SharedPreferences =
+        context.getSharedPreferences(
+            "vinyl_finder_prefs",
+            Context.MODE_PRIVATE,
+        )
 
     val json = Json { ignoreUnknownKeys = true }
 
-    inline fun <reified T> store(key: String, value: T) {
+    inline fun <reified T> store(
+        key: String,
+        value: T,
+    ) {
         prefs.edit {
             when (value) {
                 is String -> putString(key, value)
@@ -27,8 +32,8 @@ class KeyValueStore(context: Context) {
         }
     }
 
-    inline fun <reified T> read(key: String): T? {
-        return when (T::class) {
+    inline fun <reified T> read(key: String): T? =
+        when (T::class) {
             String::class -> prefs.getString(key, null) as? T
             Int::class -> if (prefs.contains(key)) prefs.getInt(key, 0) as T else null
             Long::class -> if (prefs.contains(key)) prefs.getLong(key, 0L) as T else null
@@ -36,7 +41,6 @@ class KeyValueStore(context: Context) {
             Boolean::class -> if (prefs.contains(key)) prefs.getBoolean(key, false) as T else null
             else -> prefs.getString(key, null)?.let { json.decodeFromString<T>(it) }
         } as T
-    }
 
     fun remove(key: String) {
         prefs.edit { remove(key) }

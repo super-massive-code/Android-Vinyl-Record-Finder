@@ -11,11 +11,9 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun DeveloperOptionsScreen(
-    viewModel: DeveloperOptionsViewModel = koinViewModel()
-) {
+fun DeveloperOptionsScreen(viewModel: DeveloperOptionsViewModel = koinViewModel()) {
     Column(
-        Modifier.padding(8.dp)
+        Modifier.padding(8.dp),
     ) {
         Button(onClick = { viewModel.searchForWantedRecords() }) {
             Text(text = "Trigger Wanted Search", color = Color.White)

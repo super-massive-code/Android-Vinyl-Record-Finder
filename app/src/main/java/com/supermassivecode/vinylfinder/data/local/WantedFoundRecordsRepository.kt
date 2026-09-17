@@ -11,14 +11,14 @@ import com.supermassivecode.vinylfinder.data.local.room.WantedRecordDao
 
 class WantedFoundRecordsRepository(
     private val wantedRecordDao: WantedRecordDao,
-    private val foundRecordDao: FoundRecordDao
+    private val foundRecordDao: FoundRecordDao,
 ) {
+    suspend fun wantedRecordExistsInDatabase(record: RecordInfoDTO): Boolean = wantedRecordDao.exists(record.discogsRemoteId)
 
-    suspend fun wantedRecordExistsInDatabase(record: RecordInfoDTO): Boolean {
-        return wantedRecordDao.exists(record.discogsRemoteId)
-    }
-
-    suspend fun addWantedRecord(recordInfoDTO: RecordInfoDTO, maxPrice: Float?) {
+    suspend fun addWantedRecord(
+        recordInfoDTO: RecordInfoDTO,
+        maxPrice: Float?,
+    ) {
         wantedRecordDao.insert(
             WantedRecord(
                 discogsRemoteId = recordInfoDTO.discogsRemoteId,
@@ -26,39 +26,45 @@ class WantedFoundRecordsRepository(
                 catNo = recordInfoDTO.catno,
                 year = recordInfoDTO.year,
                 label = recordInfoDTO.label,
-                maxPrice = maxPrice
-            )
+                maxPrice = maxPrice,
+            ),
         )
     }
 
-    suspend fun getAllWantedRecords(): List<WantedRecord> {
-        return wantedRecordDao.getAll()
+    suspend fun updateWantedRecordMaxPrice(
+        databaseUid: String,
+        maxPrice: Float,
+    ) {
+        wantedRecordDao.updateMaxPrice(databaseUid, maxPrice)
     }
 
-    suspend fun getAllWithMaxPriceSet(): List<WantedRecord> {
-        return wantedRecordDao.getAllWithMaxPriceSet()
-    }
+    suspend fun getAllWantedRecords(): List<WantedRecord> = wantedRecordDao.getAll()
 
-    suspend fun getAllWantedRecordsAsDTO(): List<WantedRecordDTO> {
-        return wantedRecordDao.getAll().map { wanted ->
+    suspend fun getAllWithMaxPriceSet(): List<WantedRecord> = wantedRecordDao.getAllWithMaxPriceSet()
+
+    suspend fun getAllWantedRecordsAsDTO(): List<WantedRecordDTO> =
+        wantedRecordDao.getAll().map { wanted ->
             val foundCount = foundRecordDao.getAllForWantedRecord(wanted.uid).size
-            val info = RecordInfoDTO(
-                title = wanted.recordTitle,
-                year = wanted.year,
-                label = wanted.label,
-                catno = wanted.catNo,
-                discogsRemoteId = wanted.discogsRemoteId
-            )
+            val info =
+                RecordInfoDTO(
+                    title = wanted.recordTitle,
+                    year = wanted.year,
+                    label = wanted.label,
+                    catno = wanted.catNo,
+                    discogsRemoteId = wanted.discogsRemoteId,
+                )
             WantedRecordDTO(
                 infoDTO = info,
                 foundCount = foundCount,
                 databaseUid = wanted.uid,
-                maxPrice = wanted.maxPrice
+                maxPrice = wanted.maxPrice,
             )
         }
-    }
 
-    suspend fun addFoundRecordIfNotExists(parentId: String, found: FoundRecordDTO) {
+    suspend fun addFoundRecordIfNotExists(
+        parentId: String,
+        found: FoundRecordDTO,
+    ) {
         if (!foundRecordDao.exists(found.url, found.notes, found.totalPriceIncShipping)) {
             foundRecordDao.insert(
                 FoundRecord(
@@ -68,8 +74,8 @@ class WantedFoundRecordsRepository(
                     recordPrice = found.recordPrice,
                     totalPrice = found.totalPriceIncShipping,
                     currencyCode = found.currencyCode,
-                    seller = found.shop.shopName
-                )
+                    seller = found.shop.shopName,
+                ),
             )
         }
     }
@@ -78,8 +84,8 @@ class WantedFoundRecordsRepository(
         wantedRecordDao.delete(discogsRemoteId)
     }
 
-    suspend fun getFoundRecordsForParent(parentWantedRecordId: String): List<FoundRecordDTO> {
-        return foundRecordDao.getAllForWantedRecord(parentWantedRecordId).map {
+    suspend fun getFoundRecordsForParent(parentWantedRecordId: String): List<FoundRecordDTO> =
+        foundRecordDao.getAllForWantedRecord(parentWantedRecordId).map {
             FoundRecordDTO(
                 url = it.url,
                 recordPrice = it.recordPrice,
@@ -89,5 +95,4 @@ class WantedFoundRecordsRepository(
                 shop = Shop.DISCOGS,
             )
         }
-    }
 }
